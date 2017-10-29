@@ -2,12 +2,12 @@ import uuid
 
 import pytest
 
-from treehouse import *
+from magicdir import *
 
 
 @pytest.fixture(scope="function")
 def env(testing_dirs):
-    env = TreeHouse('bin')
+    env = MagicDir('bin')
     env.set_dir(testing_dirs[0])
     a1 = env.add('A1')
     env.A1.add('A2')

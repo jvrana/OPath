@@ -1,8 +1,21 @@
+[![travis build](https://img.shields.io/travis/jvrana/TreeHouse.svg)](https://travis-ci.org/jvrana/TreeHouse)
+[![Coverage Status](https://coveralls.io/repos/github/jvrana/TreeHouse/badge.svg?branch=master)](https://coveralls.io/github/jvrana/TreeHouse?branch=master)
+[![PyPI version](https://badge.fury.io/py/REPO.svg)](https://badge.fury.io/py/REPO)
+
+![module_icon](images/module_icon.png?raw=true)
+
+#### Build/Coverage Status
+Branch | Build | Coverage
+:---: | :---: | :---:
+**master** | [![travis build](https://img.shields.io/travis/jvrana/TreeHouse/master.svg)](https://travis-ci.org/jvrana/TreeHouse/master) | [![Coverage Status](https://coveralls.io/repos/github/jvrana/TreeHouse/badge.svg?branch=master)](https://coveralls.io/github/jvrana/TreeHouse?branch=master)
+**development** | [![travis build](https://img.shields.io/travis/jvrana/TreeHouse/development.svg)](https://travis-ci.org/jvrana/TreeHouse/development) | [![Coverage Status](https://coveralls.io/repos/github/jvrana/TreeHouse/badge.svg?branch=development)](https://coveralls.io/github/jvrana/TreeHouse?branch=development)
+
+# TreeHouse
 
 Dealing with paths and directories can be a pain. **Treehouse** allows you to build directory trees by treating
 your directory tree as a first-class object.
 
-So fancy. So perfect. Forever.
+So fancy. So perfect. So forever.
 
 ```python
 from treehouse import TreeHouse

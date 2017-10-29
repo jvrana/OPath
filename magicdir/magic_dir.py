@@ -1,11 +1,11 @@
-from .chainer import Chainer
+from .magicchain import MagicChain
 from pathlib import *
 import os
 import shutil
 from copy import deepcopy
 import glob
 
-class TreeHouse(Chainer):
+class MagicDir(MagicChain):
 
     def __init__(self, name, push_up=True, parent=None):
         super().__init__(parent=parent, push_up=push_up)
@@ -75,15 +75,15 @@ class TreeHouse(Chainer):
     def add(self, name, alias=None):
         if alias is None:
             alias = name
-        return super()._add_child(alias, with_attributes={"name": name})
+        return super()._create_child(alias, with_attributes={"name": name})
 
-    @property
-    def list(self):
-        return self.children.abspath
+    # @property
+    # def list(self):
+    #     return self.children.abspath
 
     @property
     def path(self):
-        return Path(self.dir, *self.ancestor_attrs("name"))
+        return Path(self.dir, *self.ancestors(include_self=True).name)
 
     @property
     def abspath(self):

@@ -1,23 +1,23 @@
-from treehouse import *
+from magicdir import *
 import pytest
 
 def test_chain_list():
 
     x = ["the", "cow", "jumped"]
-    x = ChainList(x)
+    x = MagicList(x)
 
     x.strip()
     print(x.replace("e", "a"))
 
 
 def test_chain_equivalence():
-    parent = Chainer()
+    parent = MagicChain()
     assert parent.root == parent
 
-    child = Chainer(parent=parent)
+    child = MagicChain(parent=parent)
     assert child.root == parent
 
-    grandchild = Chainer(parent=child)
+    grandchild = MagicChain(parent=child)
     assert grandchild.root == parent
 
     assert not grandchild.is_root()
@@ -27,7 +27,7 @@ def test_chain_equivalence():
 @pytest.fixture(params=[True, False])
 def b(request):
     pushup = request.param
-    a = Chainer(push_up=pushup)
+    a = MagicChain(push_up=pushup)
     a._create_child('b1', )
     a._create_child('c1', )
     a.b1._create_child('b2', )
@@ -53,7 +53,7 @@ def test_chainer_add_child(b):
 
 
 def test_chaining():
-    a = Chainer(push_up=True)
+    a = MagicChain(push_up=True)
     a._create_child('b1', )
     a._create_child('c1', )
     a.b1._create_child('b2', )
@@ -68,10 +68,10 @@ def test_chaining():
     children = a.descendents()
 
     children += [1]
-    assert type(children) is ChainList
+    assert type(children) is MagicList
 
 def test_ancestors():
-    a = Chainer(push_up=True)
+    a = MagicChain(push_up=True)
     a._create_child('b1', )
     a.b1._create_child('c1', )
     d1 = a.c1._create_child('d1', )
@@ -83,7 +83,7 @@ def test_ancestors():
     assert len(d1.ancestors(include_self=True)) == 4
 
 def test_remove():
-    a = Chainer(push_up=True)
+    a = MagicChain(push_up=True)
     a._create_child('b1', )
     a.b1._create_child('c1', )
     a.c1._create_child('d1', )
@@ -107,7 +107,7 @@ def test_remove():
     assert c1.e1.root is c1
 
 def test_remove_children():
-    a = Chainer(push_up=True)
+    a = MagicChain(push_up=True)
     a._create_child('b1', )
     a._create_child('b2', )
     a.b1._create_child('c1', )
@@ -130,7 +130,7 @@ def test_remove_children():
 
 def test_set_raises_attr_error():
 
-    a = Chainer()
+    a = MagicChain()
     a._create_child('b1')
     with pytest.raises(AttributeError):
         a.b1 = 4

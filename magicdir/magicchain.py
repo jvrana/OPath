@@ -2,17 +2,17 @@ import keyword
 from copy import copy
 
 
-class ChainList(list):
+class MagicList(list):
     """ List-like class that collects attributes and applies functions """
 
     def __getattr__(self, item):
-        return ChainList([getattr(x, item) for x in self])
+        return MagicList([getattr(x, item) for x in self])
 
     def __call__(self, *args, **kwargs):
-        return ChainList([x(*args, **kwargs) for x in self])
+        return MagicList([x(*args, **kwargs) for x in self])
 
 
-class Chainer(object):
+class MagicChain(object):
     """ A tree-like class for chaining commands and attributes together """
 
     def __init__(self, parent=None, push_up=None):
@@ -20,7 +20,7 @@ class Chainer(object):
         Chainer constructor
 
         :param parent: parent node that called this object
-        :type parent: Chainer
+        :type parent: MagicChain
         :param push_up: whether to push up attributes to the root node
         :type push_up: boolean
         """
@@ -42,7 +42,7 @@ class Chainer(object):
 
     @property
     def children(self):
-        return ChainList(self._children.values())
+        return MagicList(self._children.values())
 
     @property
     def root(self):
@@ -62,7 +62,7 @@ class Chainer(object):
             c += children
             for child in children:
                 c += child.descendents()
-        return ChainList(c)
+        return MagicList(c)
 
     def ancestors(self, include_self=False):
         p = []
@@ -70,7 +70,7 @@ class Chainer(object):
             p += self.parent.ancestors(include_self=True)
         if include_self:
             p += [self]
-        return ChainList(p)
+        return MagicList(p)
 
     # def ancestor_attrs(self, attr, include_self=False):
     #     nodes = self.ancestors(include_self=include_self)

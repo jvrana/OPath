@@ -5,7 +5,7 @@ from distutils.core import setup
 # about
 __author__ = 'Justin Dane Vrana'
 __license__ = 'MIT'
-__package__ = "treehouse"
+__package__ = "magicdir"
 __readme__ = "README"
 
 tests_require = [
@@ -43,7 +43,7 @@ setup(
         name=__package__,
         version=get_version(),
         packages=[__package__],
-        url='https://github.com/jvrana/TreeHouse',
+        url='https://github.com/jvrana/magicdir',
         license=__license__,
         author=__author__,
         author_email='justin.vrana@gmail.com',

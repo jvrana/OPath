@@ -1,9 +1,9 @@
-from treehouse import *
+from magicdir import *
 import pytest
 
 @pytest.fixture(params=[True, False])
 def a(request):
-    env = TreeHouse('bin', push_up=request.param)
+    env = MagicDir('bin', push_up=request.param)
     labels = ['a', 'b']
 
     for l1 in labels:
@@ -26,7 +26,7 @@ def test_access(a):
     pass
 
 def test_alias():
-    env = TreeHouse('bin')
+    env = MagicDir('bin')
     name = 'somethigldj'
     alias = 'asldkfjlsdfj'
     env.add(name, alias = alias)
@@ -34,7 +34,7 @@ def test_alias():
     assert not hasattr(env, name)
 
 def test_unsanitized_alias():
-    env = TreeHouse('bin')
+    env = MagicDir('bin')
     env.add('something')
     with pytest.raises(AttributeError):
         env.add('alskdf;;asd;flj')
@@ -44,13 +44,13 @@ def test_unsanitized_alias():
         env.add('something')
 
 def test_unique_aliases():
-    env = TreeHouse('bin')
+    env = MagicDir('bin')
     with pytest.raises(AttributeError):
         env.add('L1').add('L2')
         env.add('L1a').add('L2')
 
 def test_path():
-    env = TreeHouse('bin')
+    env = MagicDir('bin')
     env.add('session1')
     env.session1.add('cat1')
     env.session1.add('cat2')
@@ -63,7 +63,7 @@ def test_path():
     assert str(env.cat2.path) == 'bin/session1/cat2'
 
 def test_print_tree():
-    env = TreeHouse('bin', push_up=True)
+    env = MagicDir('bin', push_up=True)
     env.add('session1')
     env.session1.add('cat1')
     env.session1.add('cat2')
@@ -75,7 +75,7 @@ def test_print_tree():
     env.print()
 
 def test_paths():
-    env = TreeHouse('bin')
+    env = MagicDir('bin')
     env.add('session1')
     env.session1.add('cat1')
     env.session1.add('cat2')
@@ -84,7 +84,7 @@ def test_paths():
     print(env.paths)
 
 def test_resolve():
-    env = TreeHouse('bin')
+    env = MagicDir('bin')
     env.add('session1')
     env.session1.add('cat1')
     env.session1.add('cat2')
@@ -92,7 +92,7 @@ def test_resolve():
 
 def test_remove():
 
-    env = TreeHouse('bin', push_up=True)
+    env = MagicDir('bin', push_up=True)
 
     a1 = env.add('A1')
     env.A1.add('A2')
@@ -122,7 +122,7 @@ def test_remove():
 
 def test_remove_children():
 
-    env = TreeHouse('bin', push_up=True)
+    env = MagicDir('bin', push_up=True)
 
     a1 = env.add('A1')
     env.A1.add('A2')

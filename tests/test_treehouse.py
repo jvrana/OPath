@@ -106,7 +106,9 @@ def test_remove():
     assert hasattr(env, 'A2')
     assert hasattr(env, 'B2')
 
-    env.A1.remove()
+    env.A1.delete()
+
+    g = env.descendents()
 
     # Cannot access A1 from env. Can still access A2 from a1
     assert not hasattr(env, 'A1')
@@ -117,3 +119,24 @@ def test_remove():
     assert hasattr(env, 'B1')
     assert hasattr(env.B1, 'B2')
     assert hasattr(env, 'B2')
+
+def test_remove_children():
+
+    env = TreeHouse('bin', push_up=True)
+
+    a1 = env.add('A1')
+    env.A1.add('A2')
+    b1 = env.add('B1')
+    env.B1.add('B2')
+
+    assert hasattr(env, 'A1')
+    assert hasattr(env, 'B1')
+    assert hasattr(env.A1, 'A2')
+    assert hasattr(env.B1, 'B2')
+    assert hasattr(env, 'A2')
+    assert hasattr(env, 'B2')
+
+    print(env.children.delete())
+
+    g = env.descendents()
+    assert len(g) == 0

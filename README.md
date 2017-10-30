@@ -16,7 +16,7 @@ Branch | Build | Coverage
 Dealing with paths and directories isn't rocket science, but it can be a pain. **MagicDir** allows you to build directory trees by treating
 your directory tree as a first-class object.
 
-![live_example](images/magicdir_example.png?raw=true)
+![live_example](images/magicdir_example.gif?raw=true)
 
 Its very easy to create, move, or delete directory trees. For example, the following builds the directory
 skeleton for this repo.

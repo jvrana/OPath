@@ -142,9 +142,13 @@ def test_sanitize_attr():
 
     a = MagicChain()
     with pytest.raises(AttributeError):
-        a.add('in')
+        a._create_and_add_child('in')
     with pytest.raises(AttributeError):
-        a.add('with')
+        a._create_and_add_child('with')
+    n = 'something'
+    a._create_and_add_child(n)
+    with pytest.raises(AttributeError):
+        a._create_and_add_child(n)
 
 
 # def test_attributes():

@@ -1,6 +1,7 @@
 import pytest
 from pathlib import Path
 import shutil
+from magicdir.utils import *
 
 @pytest.fixture(scope="module")
 def this_dir():
@@ -12,10 +13,11 @@ def testing_dirs():
     env2 = Path(this_dir(), 'env2')
 
     if env1.is_dir():
-        shutil.rmtree(env1)
+        rmtree(env1)
     if env2.is_dir():
-        shutil.rmtree(env2)
+        rmtree(env2)
 
-    env1.mkdir(exist_ok=True)
-    env2.mkdir(exist_ok=True)
+
+    env1.mkdir()
+    env2.mkdir()
     return env1, env2

@@ -76,6 +76,10 @@ class MagicDir(MagicChain):
     def add(self, name, alias=None):
         if alias is None:
             alias = name
+        if name in self.children.name:
+            raise AttributeError("Folder name \"{}\" already exists. Existing folders: {}".format(name, ', '
+                                                                                                        ''.join(
+                    self.childen.name)))
         return super()._create_child(alias, with_attributes={"name": name})
 
     # @property

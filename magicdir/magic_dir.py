@@ -38,14 +38,21 @@ class MagicDir(MagicChain):
     def cpdirs(self, new_parent):
         copytree(self.abspath, Path(new_parent, self.name))
         copied_dirs = deepcopy(self)
+        copied_dirs.delete()
         copied_dirs.set_dir(new_parent)
         return copied_dirs
 
     def mvdirs(self, new_parent):
         oldpath = self.abspath
+        self.delete()
         copytree(oldpath, Path(new_parent, self.name))
         self.set_dir(new_parent)
         rmtree(oldpath)
+
+    def delete(self):
+        new_parent = self.abspath.parent
+        self._parent_dir = new_parent
+        return super().delete()
 
     def ls(self):
         return listdir(self.abspath)

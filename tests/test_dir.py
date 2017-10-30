@@ -32,6 +32,17 @@ def test_mkdir_rmdir(env):
     assert not env.all_exists()
 
 
+def test_delete(env):
+    env.mkdirs()
+
+    a1 = env.A1
+    oldpath = a1.abspath
+    a1.delete()
+    assert oldpath == a1.abspath
+    assert not hasattr(env, 'A1')
+    assert not hasattr(env, 'A2')
+    assert hasattr(a1, 'A2')
+
 def test_cpdirs(env, testing_dirs):
     env.mkdirs()
     filename = '{}.txt'.format(str(uuid.uuid4()))
@@ -42,12 +53,20 @@ def test_cpdirs(env, testing_dirs):
 
     assert Path(env.A2.abspath, filename).is_file()
     assert Path(envcopy.A2.abspath, filename).is_file()
+    assert Path(testing_dirs[1], 'bin', 'A1', 'A2', filename).is_file()
 
     env.rmdirs()
     print(env.A2.abspath)
     print(envcopy.A2.abspath)
     assert not Path(env.A2.abspath, filename).is_file()
     assert Path(envcopy.A2.abspath, filename).is_file()
+
+
+    a1copy = envcopy.A1.cpdirs(testing_dirs[0])
+
+    assert a1copy.is_root()
+    envcopy.A1.rmdirs()
+    assert hasattr(a1copy, 'A2')
 
 
 def test_mvdir(env, testing_dirs):

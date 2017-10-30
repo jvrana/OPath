@@ -21,7 +21,7 @@ your directory tree as a first-class object.
 Its very easy to create, move, or delete directory trees. For example, the following builds the directory
 skeleton for this repo.
 
-![example](images/directory_example.png?raw=true)
+![demo](images/directory_example.png?raw=true)
 
 ```python
 from magicdir import *
@@ -44,10 +44,48 @@ env.core.write("__init__.py", "w", "__version__ = \"1.0\"")
 
 Other things you can do:
 
+Abstracting the directory structure lets your create, remove, copy, move directory trees easily.
+
+![rmdirs_example](images/rmdirs_example.gif?raw=true)
+
+All paths are easily accessible.
+
 ```python
-
-
+print(env.test.abspath) # absolute path
+print(env.test.path) # relative path
 ```
+
+You can even read and write files intuitively.
+
+```python
+# writes file to 'test' folder
+env.test.write('test.txt', 'w', 'some data')
+
+# reads test file
+env.test.read('test.txt', 'r')
+
+ # open file and read lines
+env.test.open('test.txt', 'r').readlines()
+```
+
+All iterables are magically chainable making it easy to do complex things. Pretty cool!
+
+```python
+# recurseively write a log file to all subfolders of 'core'
+env.core.descendents.write('log.txt', 'w', 'some log file')
+
+# read all files named 'log.txt' for subfolders in 'test'
+env.test.children.read('log.txt', 'r')
+
+# readlines files named 'log.txt' for subfolders in 'test'
+env.test.children.open('log.txt', 'r').readlines()
+
+# recursively get stats on folders
+d = env.descendents()
+zip(d, d.stat().st_mtime)
+```
+
+Better documentation about chaining methods is soon to come along with recipes.
 
 # Installation
 

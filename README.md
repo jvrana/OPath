@@ -1,6 +1,7 @@
 [![travis build](https://img.shields.io/travis/jvrana/TreeHouse.svg)](https://travis-ci.org/jvrana/TreeHouse)
 [![Coverage Status](https://coveralls.io/repos/github/jvrana/TreeHouse/badge.svg?branch=master)](https://coveralls.io/github/jvrana/TreeHouse?branch=master)
 [![PyPI version](https://badge.fury.io/py/REPO.svg)](https://badge.fury.io/py/REPO)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ![module_icon](images/module_icon.png?raw=true)
 

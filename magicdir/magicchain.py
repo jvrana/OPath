@@ -11,7 +11,6 @@ class MagicList(list):
     def __call__(self, *args, **kwargs):
         return MagicList([x(*args, **kwargs) for x in self])
 
-
 class MagicChain(object):
     """ A tree-like class for chaining commands and attributes together """
 
@@ -30,11 +29,16 @@ class MagicChain(object):
         self._push_up = False
         if push_up is not None:
             self._push_up = push_up
-        self._alias = None
+        self._attr = None
 
     @property
-    def alias(self):
-        return self._alias
+    def attr(self):
+        return self._attr
+
+    @attr.setter
+    def attr(self, a):
+        self._sanitize_identifier(a)
+        self._attr = a
 
     @property
     def parent(self):
@@ -80,21 +84,21 @@ class MagicChain(object):
     #     nodes = self.descendents(include_self=include_self)
     #     return [getattr(n, attr) for n in nodes]
 
-    def delete(self):
-        if self.parent is not None:
-            parent = self.parent
-            rm = parent._remove_child(self.alias)
-            rm._parent = None
-            parent._update_grandchildren()
-            rm._update_grandchildren()
-            return rm
-
     # def connect(self, other, push_up=None):
     #     raise NotImplemented("Connect is not yet implemented.")
     #     # if push_up is None:
     #     #     push_up = self._push_up
     #     # other.remove()
     #     # self._add_child(other, push_up=push_up)
+
+    def remove_parent(self):
+        if self.parent is not None:
+            parent = self.parent
+            rm = parent._remove_child(self.attr)
+            rm._parent = None
+            parent._update_grandchildren()
+            rm._update_grandchildren()
+            return rm
 
     def _sanitize_identifier(self, iden):
         if keyword.iskeyword(iden):
@@ -104,48 +108,31 @@ class MagicChain(object):
         if hasattr(self, iden):
             raise AttributeError("identifier \"{}\" already exists".format(iden))
 
-    def _create_child(self, alias, with_attributes=None, push_up=None):
-        if push_up is None:
-            push_up = self._push_up
-        self._sanitize_identifier(alias)
-        child = self._copy(alias, with_attributes)
-        return self._add_child(child, push_up=push_up)
+    def _create_child(self, attr, with_attributes=None):
+        child = self._copy(attr, with_attributes)
+        return child
 
     def _add_child(self, child, push_up=None):
         if push_up is None:
             push_up = self._push_up
-        if child.alias in self._children:
-            raise AttributeError("Cannot add alias {}. Try using a unique alias.".format(child.alias))
-        self._children[child.alias] = child
+        if child.attr in self._children:
+            raise AttributeError("Cannot add attr {}. Try using a unique attr.".format(child.attr))
         if push_up:
             self._add_grandchild(child)
+        self._children[child.attr] = child
         return child
 
-    def _remove_child(self, alias):
-        if alias in self._children:
-            return self._children.pop(alias)
+    def _create_and_add_child(self, attr, with_attributes=None, push_up=None):
+        if push_up is None:
+            push_up = self._push_up
+        child = self._create_child(attr, with_attributes)
+        return self._add_child(child, push_up=push_up)
 
-    def _update_grandchildren(self):
-        """ Updates accessible children """
-        if self._push_up:
-            self.root._grandchildren = {}
-            d = self.root.descendents()
-            for c in self.root.descendents():
-                self._add_grandchild(c)
+    def _remove_child(self, attr):
+        if attr in self._children:
+            return self._children.pop(attr)
 
-    def _add_grandchild(self, child):
-        if child.alias not in self.root._children:
-            if hasattr(self.root, child.alias):
-                raise AttributeError("Cannot push alias {} to root. Try using a unique alias.".format(child.alias))
-            self.root._grandchildren[child.alias] = child
-        return child
-
-    # def _remove_grandchild(self, alias):
-    #     gc = self.root._grandchildren
-    #     if alias in gc:
-    #         return gc.pop(alias)
-
-    def _copy(self, alias, with_attributes=None):
+    def _copy(self, attr, with_attributes=None):
         c = copy(self)
         c._parent = self
         c._children = {}
@@ -154,8 +141,35 @@ class MagicChain(object):
             with_attributes = {}
         for k, v in with_attributes.items():
             setattr(c, k, v)
-        c._alias = alias
+        c.attr = attr
         return c
+
+    def _update_grandchildren(self):
+        """ Updates accessible children """
+        if self._push_up:
+            self.root._grandchildren = {}
+            for c in self.children:
+                d = c.descendents(include_self=False)
+                for gc in d:
+                    self._add_grandchild(gc)
+
+    def _attributes(self):
+        return list(self._children.keys()) + list(self._grandchildren.keys())
+
+    def _add_grandchild(self, child):
+        if hasattr(self.root, child.attr):
+            raise AttributeError("Cannot push attr {} to root. Try using a unique attr ({})".format(child.attr,
+                                                                                                      self.root._attributes()))
+        self.root._grandchildren[child.attr] = child
+        return child
+
+    def get(self, attr):
+        return getattr(self, attr)
+
+    # def _remove_grandchild(self, attr):
+    #     gc = self.root._grandchildren
+    #     if attr in gc:
+    #         return gc.pop(attr)
 
     def __getattr__(self, name):
         c = {}

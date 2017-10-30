@@ -16,7 +16,7 @@ tests_require = [
 ]
 
 install_requires = [
-    # package requirements
+    'pathlib'
 ]
 
 classifiers = [],
@@ -51,6 +51,6 @@ setup(
         description='intuitive python directory tree management for all',
         long_description=read(__readme__),
         install_requires=install_requires,
-        python_requires='>=3.4',
+        python_requires='>=3.3',
         tests_require=tests_require,
 )

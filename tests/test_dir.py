@@ -9,9 +9,9 @@ from magicdir import *
 def env(testing_dirs):
     env = MagicDir('bin')
     env.set_dir(testing_dirs[0])
-    a1 = env.add('A1')
+    env.add('A1')
     env.A1.add('A2')
-    b1 = env.add('B1')
+    env.add('B1')
     env.B1.add('B2')
     return env
 
@@ -32,22 +32,41 @@ def test_mkdir_rmdir(env):
     assert not env.all_exists()
 
 
+def test_delete(env):
+    env.mkdirs()
+
+    a1 = env.A1
+    oldpath = a1.abspath
+    a1.delete()
+    assert oldpath == a1.abspath
+    assert not hasattr(env, 'A1')
+    assert not hasattr(env, 'A2')
+    assert hasattr(a1, 'A2')
+
 def test_cpdirs(env, testing_dirs):
     env.mkdirs()
     filename = '{}.txt'.format(str(uuid.uuid4()))
-    with open(Path(env.A2.abspath, filename), 'w') as f:
+    with open(str(Path(env.A2.abspath, filename)), 'w') as f:
         f.write('this is some test text')
 
     envcopy = env.cpdirs(testing_dirs[1])
 
     assert Path(env.A2.abspath, filename).is_file()
     assert Path(envcopy.A2.abspath, filename).is_file()
+    assert Path(testing_dirs[1], 'bin', 'A1', 'A2', filename).is_file()
 
     env.rmdirs()
     print(env.A2.abspath)
     print(envcopy.A2.abspath)
     assert not Path(env.A2.abspath, filename).is_file()
     assert Path(envcopy.A2.abspath, filename).is_file()
+
+
+    a1copy = envcopy.A1.cpdirs(testing_dirs[0])
+
+    assert a1copy.is_root()
+    envcopy.A1.rmdirs()
+    assert hasattr(a1copy, 'A2')
 
 
 def test_mvdir(env, testing_dirs):
@@ -57,7 +76,7 @@ def test_mvdir(env, testing_dirs):
 
     # write custom file
     filename = '{}.txt'.format(str(uuid.uuid4()))
-    with open(Path(env.A2.abspath, filename), 'w') as f:
+    with open(str(Path(env.A2.abspath, filename)), 'w') as f:
         f.write('this is some test text')
 
     assert Path(env.A2.abspath, filename).is_file()
@@ -96,6 +115,6 @@ def test_glob(env):
     assert len(env.glob('*.txt')) == 0
     assert len(env.A2.glob("*.txt")) == 2
 
-def test_print_tree(env):
-    env.mkdirs()
-    env.list_dir()
+# def test_print_tree(env):
+#     env.mkdirs()
+#     env.list_dir()

@@ -1,5 +1,5 @@
-[![travis build](https://img.shields.io/travis/jvrana/TreeHouse.svg)](https://travis-ci.org/jvrana/TreeHouse)
-[![Coverage Status](https://coveralls.io/repos/github/jvrana/TreeHouse/badge.svg?branch=master)](https://coveralls.io/github/jvrana/TreeHouse?branch=master)
+[![travis build](https://img.shields.io/travis/jvrana/magicdir.svg)](https://travis-ci.org/jvrana/magicdir)
+[![Coverage Status](https://coveralls.io/repos/github/jvrana/magicdir/badge.svg?branch=master)](https://coveralls.io/github/jvrana/magicdir?branch=master)
 [![PyPI version](https://badge.fury.io/py/REPO.svg)](https://badge.fury.io/py/REPO)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -8,10 +8,10 @@
 #### Build/Coverage Status
 Branch | Build | Coverage
 :---: | :---: | :---:
-**master** | [![travis build](https://img.shields.io/travis/jvrana/TreeHouse/master.svg)](https://travis-ci.org/jvrana/TreeHouse/master) | [![Coverage Status](https://coveralls.io/repos/github/jvrana/TreeHouse/badge.svg?branch=master)](https://coveralls.io/github/jvrana/TreeHouse?branch=master)
-**development** | [![travis build](https://img.shields.io/travis/jvrana/TreeHouse/development.svg)](https://travis-ci.org/jvrana/TreeHouse/development) | [![Coverage Status](https://coveralls.io/repos/github/jvrana/TreeHouse/badge.svg?branch=development)](https://coveralls.io/github/jvrana/TreeHouse?branch=development)
+**master** | [![travis build](https://img.shields.io/travis/jvrana/magicdir/master.svg)](https://travis-ci.org/jvrana/magicdir/master) | [![Coverage Status](https://coveralls.io/repos/github/jvrana/magicdir/badge.svg?branch=master)](https://coveralls.io/github/jvrana/magicdir?branch=master)
+**development** | [![travis build](https://img.shields.io/travis/jvrana/magicdir/development.svg)](https://travis-ci.org/jvrana/magicdir/development) | [![Coverage Status](https://coveralls.io/repos/github/jvrana/magicdir/badge.svg?branch=development)](https://coveralls.io/github/jvrana/magicdir?branch=development)
 
-# TreeHouse
+# magicdir
 
 Dealing with paths and directories can be a pain. **Treehouse** allows you to build directory trees by treating
 your directory tree as a first-class object.
@@ -19,9 +19,9 @@ your directory tree as a first-class object.
 So fancy. So perfect. So forever.
 
 ```python
-from treehouse import TreeHouse
+from treehouse import magicdir
 
-env = TreeHouse('bin')
+env = magicdir('bin')
 env.add('level1')
 
 # paths can be accessed as attributes
@@ -59,7 +59,7 @@ env.paths # relative paths
 env.paths.absolute() # absolute paths
 env.abspaths
 
-# all attributes return another TreeHouse object
+# all attributes return another magicdir object
 l2 = env.level2
 print("tree")
 env.print_tree()
@@ -107,7 +107,7 @@ The following are equivalent ways to produce the following directory
 structure:
 
 ```python
-env = TreeHouse('bin')
+env = magicdir('bin')
 env.add('.secrets', alias='secrets')
 env.secrets.add('misc')
 env.add('public')
@@ -118,7 +118,7 @@ env.mkdirs()
 ```
 
 ```python
-env = TreeHouse('bin')
+env = magicdir('bin')
 env.add('.secrets', alias='secrets').add('misc')
 env.add('public').add('category1')
 env.public.add('category2')
@@ -127,7 +127,7 @@ env.mkdirs()
 ```
 
 ```python
-env = TreeHouse('bin')
+env = magicdir('bin')
 env.add('.secrets', alias='secrets').add('misc')
 env.add('public/category1')
 env.add('public/category2')

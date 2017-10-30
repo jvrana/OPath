@@ -22,8 +22,8 @@ def a(request):
                 assert not hasattr(env, next_level)
             assert hasattr(level, next_level)
 
-def test_access(a):
-    pass
+# def test_access(a):
+#     pass
 
 def test_alias():
     env = MagicDir('bin')

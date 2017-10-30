@@ -52,3 +52,9 @@ fabric.properties
 
 *.iml
 *.xml
+/tests/env1/bin/B1/
+/tests/env1/bin/A1/
+/tests/env2/
+/tests/env1/
+/tests/env1/bin/
+/tests/.cache/

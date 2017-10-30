@@ -1,7 +1,6 @@
 import pytest
+from magicdir import *
 from pathlib import Path
-import shutil
-from magicdir.utils import *
 
 @pytest.fixture(scope="module")
 def this_dir():

@@ -1,33 +1,27 @@
 import os
 import shutil
-from pathlib import Path
 
 # necessary for python3.3 support for pathlib.Path (not natively supported)
 
 def rmtree(path):
     return shutil.rmtree(str(path))
 
-
 def copytree(src, dst):
     return shutil.copytree(str(src), str(dst))
-
 
 def makedirs(path, *args, **kwargs):
     return os.makedirs(str(path), *args, **kwargs)
 
-
 def listdir(path):
     return os.listdir(str(path))
-
 
 def walk(path):
     return os.walk(str(path))
 
-
 def fopen(path, mode, *args, **kwargs):
     return open(str(path), mode, *args, **kwargs)
 
-#
+
 # def list_dir(self, print_files=False, indent=4, max_level=None):
 #     tree = ""
 #     padding = '|'+' ' * (indent-1)

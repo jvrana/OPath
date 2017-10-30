@@ -9,9 +9,9 @@ from magicdir import *
 def env(testing_dirs):
     env = MagicDir('bin')
     env.set_dir(testing_dirs[0])
-    a1 = env.add('A1')
+    env.add('A1')
     env.A1.add('A2')
-    b1 = env.add('B1')
+    env.add('B1')
     env.B1.add('B2')
     return env
 

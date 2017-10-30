@@ -5,7 +5,7 @@ from distutils.core import setup
 # about
 __author__ = 'Justin Dane Vrana'
 __license__ = 'MIT'
-__package__ = "magicdir"
+__package__ = "MagicDir"
 __readme__ = "README"
 
 tests_require = [
@@ -16,7 +16,7 @@ tests_require = [
 ]
 
 install_requires = [
-    # package requirements
+    'pathlib'
 ]
 
 classifiers = [],
@@ -43,7 +43,7 @@ setup(
         name=__package__,
         version=get_version(),
         packages=[__package__],
-        url='https://github.com/jvrana/magicdir',
+        url='https://github.com/jvrana/MagicDir',
         license=__license__,
         author=__author__,
         author_email='justin.vrana@gmail.com',
@@ -51,6 +51,6 @@ setup(
         description='intuitive python directory tree management for all',
         long_description=read(__readme__),
         install_requires=install_requires,
-        python_requires='>=3.4',
+        python_requires='>=3.3',
         tests_require=tests_require,
 )

@@ -1,143 +1,167 @@
-[![travis build](https://img.shields.io/travis/jvrana/TreeHouse.svg)](https://travis-ci.org/jvrana/TreeHouse)
-[![Coverage Status](https://coveralls.io/repos/github/jvrana/TreeHouse/badge.svg?branch=master)](https://coveralls.io/github/jvrana/TreeHouse?branch=master)
+[![travis build](https://img.shields.io/travis/jvrana/magicdir.svg)](https://travis-ci.org/jvrana/magicdir)
+[![Coverage Status](https://coveralls.io/repos/github/jvrana/magicdir/badge.svg?branch=master)](https://coveralls.io/github/jvrana/magicdir?branch=master)
 [![PyPI version](https://badge.fury.io/py/REPO.svg)](https://badge.fury.io/py/REPO)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ![module_icon](images/module_icon.png?raw=true)
 
 #### Build/Coverage Status
 Branch | Build | Coverage
 :---: | :---: | :---:
-**master** | [![travis build](https://img.shields.io/travis/jvrana/TreeHouse/master.svg)](https://travis-ci.org/jvrana/TreeHouse/master) | [![Coverage Status](https://coveralls.io/repos/github/jvrana/TreeHouse/badge.svg?branch=master)](https://coveralls.io/github/jvrana/TreeHouse?branch=master)
-**development** | [![travis build](https://img.shields.io/travis/jvrana/TreeHouse/development.svg)](https://travis-ci.org/jvrana/TreeHouse/development) | [![Coverage Status](https://coveralls.io/repos/github/jvrana/TreeHouse/badge.svg?branch=development)](https://coveralls.io/github/jvrana/TreeHouse?branch=development)
+**master** | [![travis build](https://img.shields.io/travis/jvrana/magicdir/master.svg)](https://travis-ci.org/jvrana/magicdir/master) | [![Coverage Status](https://coveralls.io/repos/github/jvrana/magicdir/badge.svg?branch=master)](https://coveralls.io/github/jvrana/magicdir?branch=master)
+**development** | [![travis build](https://img.shields.io/travis/jvrana/magicdir/development.svg)](https://travis-ci.org/jvrana/magicdir/development) | [![Coverage Status](https://coveralls.io/repos/github/jvrana/magicdir/badge.svg?branch=development)](https://coveralls.io/github/jvrana/magicdir?branch=development)
 
-# TreeHouse
+# MagicDir
 
-Dealing with paths and directories can be a pain. **Treehouse** allows you to build directory trees by treating
+Dealing with paths and directories isn't rocket science, but it can be a pain. **MagicDir** allows you to build directory trees by treating
 your directory tree as a first-class object.
 
-So fancy. So perfect. So forever.
+Its very easy to create, move, or delete directory trees. For example, the following builds the directory
+skeleton for this repo.
+
+![example](images/directory_example.png?raw=true)
 
 ```python
-from treehouse import TreeHouse
+from magicdir import *
 
-env = TreeHouse('bin')
-env.add('level1')
+# create folder structure
+env = MagicDir('magicdir')
+env.add('magicdir', alias='core')
+env.core.add('tests')
+env.tests.add('env')
+env.tests.add('env2')
 
-# paths can be accessed as attributes
-env.level1
-
-# paths and attributes are heirarchical
-env.level1.add('level2')
-env.level1.level2
-
-# by default, attributes get 'pushed' back to root for quick access to your paths
-env.level2 == env.level1.level2
-
-# attribute aliases can be defined
-env.level2.add('level2', alias='level2a')
-env.level2a
-
-# print the expected tree
-env.print_tree()
-
-# alias of directory
-env.alias
-env.level1.alias
-
-# name of directory
-env.name
-env.level1.name
-
-# print root path
-env.path # relative path
-env.path.absolute()
-env.abspath
-
-# print paths in tree
-env.paths # relative paths
-env.paths.absolute() # absolute paths
-env.abspaths
-
-# all attributes return another TreeHouse object
-l2 = env.level2
-print("tree")
-env.print_tree()
-
-print("level2 tree")
-l2.print_tree()
-
-# set the parent directory this directory tree will exist in
-env.set_dir('..')
-
-# instantly make the directory tree
+# make the directory
+env.set_dir(Path(__file__).absolute().parent)
 env.mkdirs()
 
-# remove the directory tree (be careful!)
-env.rmdirs()
+# write some files
+env.write('README.md', 'w', '# Magic Dir\nThis is a test readme file')
+env.core.write("__init__.py", "w", "__version__ = \"1.0\"")
+```
 
-# move the directory tree
-env.mvdirs()
+Other things you can do:
 
-# copy the directory tree
-env.cpdirs()
+```python
 
-# get root
-assert env is env.misc.root
-
-#
-env.misc.somethingelse = 5
-assert not hasattr(env, 'somethingelse')
-assert hasattr(env.misc, 'somethingelse')
-
-# fancy things
-env.misc.ancestors(include_self=True).name # name of all attributes for parents
-env.descendents(include_self=True).name # name of all children
-env.paths.absolute().resolve() # chain things together
-
-env.paths # all paths of all children
-env.paths.absolute() # apply absolute() to each path, return ChainList
-env.paths.resolve() # apply absolute() and then resolve() to each path, return ChainList
-
-# quickly writing files
 
 ```
 
-The following are equivalent ways to produce the following directory
-structure:
+# Installation
 
-```python
-env = TreeHouse('bin')
-env.add('.secrets', alias='secrets')
-env.secrets.add('misc')
-env.add('public')
-env.public.add('category1')
-env.public.add('category2')
+Installation via pip is the easiest way...
 
-env.mkdirs()
+```bash
+pip install magicdir
 ```
 
-```python
-env = TreeHouse('bin')
-env.add('.secrets', alias='secrets').add('misc')
-env.add('public').add('category1')
-env.public.add('category2')
+# Basic usage
 
-env.mkdirs()
+Use `add` to create folders.
+
+```python
+from magicdir import *
+
+env = MagicDir('bin')
+env.add('subfolder1')
+env.add('subfolder2')
+env.print()
+
+>>>
+*bin
+|   *subfolder1
+|   *subfolder2
 ```
 
+Functions return MagicDir objects and so can be chained together.
 ```python
-env = TreeHouse('bin')
-env.add('.secrets', alias='secrets').add('misc')
-env.add('public/category1')
-env.add('public/category2')
-env.mkdirs()
+env = MagicDir('bin')
+env.add('subfolder1').add('subsubfolder')
+env.print()
+
+>>>
+*bin
+|   *subfolder1
+|   |   *subsubfolder
 ```
 
-Quickly access your paths:
+Add can be chained together
 ```python
-env.category1 # 'bin/public/category1'
-env.category2 # 'bin/public/category2'
-env.public  # 'bin/public'
-env.secrets # 'bin/.secrets'
-env.misc # 'bin/.secrets/misc'
+env = MagicDir('bin')
+env.add('subfolder1').add('subsubfolder')
+env.print()
+
+>>>
+*bin
+|   *subfolder1
+|   |   *subsubfolder
+```
+
+Folders create accesible MagicDir attributes automatically. Alternative attribute names can be set using
+'alias='
+
+```python
+env = MagicDir('bin')
+env.add('subfolder1')
+env.subfolder1.add('misc')
+env.subfolder1.misc.add('.hidden', alias='hidden')
+env.subfolder1.misc.hidden.add('hiddenbin')
+env.print()
+
+*bin
+|   *subfolder1
+|   |   *misc
+|   |   |   *.hidden ("hidden")
+|   |   |   |   *hiddenbin
+
+```
+
+By default, attributes are *pushed* back the the root directory. The following is equivalent to above.
+
+```python
+env = MagicDir('bin')
+env.add('subfolder1')
+env.subfolder1.add('misc')
+env.misc.add('.hidden', alias='hidden')
+env.hidden.add('hiddenbin')
+env.print()
+
+*bin
+|   *subfolder1
+|   |   *misc
+|   |   |   *.hidden ("hidden")
+|   |   |   |   *hiddenbin
+
+```
+
+# Making, moving, copying, and deleting directories
+
+The location of the root folder can be set by `set_bin`
+
+```python
+env.set_bin('../bin')
+```
+
+Directories can be created, deleted, copied or moved using `mkdirs`, `cpdirs`, `mvdirs`, `rmdirs`
+
+```python
+env.mkdirs()
+env_copy = env.cpdirs()
+# you can do stuff with env_copy independently
+env.mvdirs('~/Document')
+env_copy.rmdirs()
+```
+
+# Advanced usage
+
+All iterables return special list-like objects that can be chained in one-liners.
+
+```python
+env.descendents() # returns a MagicList object
+
+# find all txt files
+env.descendents(include_self=True).glob("*.txt")
+
+# recursively change permissions for directories
+env.abspaths.chmod(0o444)
 ```

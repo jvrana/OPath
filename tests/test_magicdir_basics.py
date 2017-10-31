@@ -25,15 +25,15 @@ def a(request):
 # def test_access(a):
 #     pass
 
-def test_alias():
+def test_attr():
     env = MagicDir('bin')
     name = 'somethigldj'
-    alias = 'asldkfjlsdfj'
-    env.add(name, alias = alias)
-    assert hasattr(env, alias)
+    attr = 'asldkfjlsdfj'
+    env.add(name, attr = attr)
+    assert hasattr(env, attr)
     assert not hasattr(env, name)
 
-def test_unsanitized_alias():
+def test_unsanitized_attr():
     env = MagicDir('bin')
     env.add('something')
     with pytest.raises(AttributeError):
@@ -42,8 +42,10 @@ def test_unsanitized_alias():
         env.add('in')
     with pytest.raises(AttributeError):
         env.add('something')
+    with pytest.raises(AttributeError):
+        env.add('something', attr='somethingelse')
 
-def test_unique_aliases():
+def test_unique_attrs():
     env = MagicDir('bin')
     with pytest.raises(AttributeError):
         env.add('L1').add('L2')
@@ -55,7 +57,7 @@ def test_path():
     env.session1.add('cat1')
     env.session1.add('cat2')
     env.add('session2')
-    env.session2.add('cat1', alias="s2cat1")
+    env.session2.add('cat1', attr="s2cat1")
 
     assert str(env.path) == 'bin'
     assert str(env.s2cat1.path) == 'bin/session2/cat1'
@@ -68,7 +70,7 @@ def test_print_tree():
     env.session1.add('cat1')
     env.session1.add('cat2')
     env.add('session2')
-    env.session2.add('cat1', alias="s2cat1")
+    env.session2.add('cat1', attr="s2cat1")
 
     print(env._children)
 
@@ -106,7 +108,7 @@ def test_remove():
     assert hasattr(env, 'A2')
     assert hasattr(env, 'B2')
 
-    env.A1.delete()
+    env.A1.remove_parent()
 
     g = env.descendents()
 
@@ -136,7 +138,7 @@ def test_remove_children():
     assert hasattr(env, 'A2')
     assert hasattr(env, 'B2')
 
-    print(env.children.delete())
+    print(env.children.remove_parent())
 
     g = env.descendents()
     assert len(g) == 0

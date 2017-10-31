@@ -3,7 +3,6 @@
 [![PyPI version](https://badge.fury.io/py/REPO.svg)](https://badge.fury.io/py/REPO)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-![module_icon](images/module_icon.png?raw=true)
 
 #### Build/Coverage Status
 Branch | Build | Coverage
@@ -11,7 +10,7 @@ Branch | Build | Coverage
 **master** | [![travis build](https://img.shields.io/travis/jvrana/magicdir/master.svg)](https://travis-ci.org/jvrana/magicdir/master) | [![Coverage Status](https://coveralls.io/repos/github/jvrana/magicdir/badge.svg?branch=master)](https://coveralls.io/github/jvrana/magicdir?branch=master)
 **development** | [![travis build](https://img.shields.io/travis/jvrana/magicdir/development.svg)](https://travis-ci.org/jvrana/magicdir/development) | [![Coverage Status](https://coveralls.io/repos/github/jvrana/magicdir/badge.svg?branch=development)](https://coveralls.io/github/jvrana/magicdir?branch=development)
 
-# MagicDir
+# 📁 MagicDir 📁
 
 Dealing with paths and directories isn't rocket science, but it can be a pain. **MagicDir** allows you to build directory trees by treating
 your directory tree as a first-class object.

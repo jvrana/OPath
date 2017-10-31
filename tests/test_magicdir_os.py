@@ -5,17 +5,6 @@ import pytest
 from magicdir import *
 
 
-@pytest.fixture(scope="function")
-def env(testing_dirs):
-    env = MagicDir('bin')
-    env.set_dir(testing_dirs[0])
-    env.add('A1')
-    env.A1.add('A2')
-    env.add('B1')
-    env.B1.add('B2')
-    return env
-
-
 def test_mkdir_rmdir(env):
     # remove
     env.rmdirs()
@@ -37,7 +26,7 @@ def test_delete(env):
 
     a1 = env.A1
     oldpath = a1.abspath
-    a1.delete()
+    a1.remove_parent()
     assert oldpath == a1.abspath
     assert not hasattr(env, 'A1')
     assert not hasattr(env, 'A2')
@@ -114,6 +103,10 @@ def test_glob(env):
     env.A2.write('open_text2.txt', 'w', 'stuff')
     assert len(env.glob('*.txt')) == 0
     assert len(env.A2.glob("*.txt")) == 2
+
+def test_get(env):
+
+    assert env.get('A1') is env.A1
 
 # def test_print_tree(env):
 #     env.mkdirs()

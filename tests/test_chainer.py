@@ -5,10 +5,13 @@ def test_chain_list():
 
     x = ["the", "cow", "jumped"]
     x = MagicList(x)
-
+    print(x)
+    list(x)
     x.strip()
-    print(x.replace("e", "a"))
+    assert [y.replace('e', 'a') for y in x] == list(x.replace("e", "a"))
 
+    empty = MagicList([])
+    assert list(empty) == []
 
 def test_chain_equivalence():
     parent = MagicChain()
@@ -28,11 +31,11 @@ def test_chain_equivalence():
 def b(request):
     pushup = request.param
     a = MagicChain(push_up=pushup)
-    a._create_child('b1', )
-    a._create_child('c1', )
-    a.b1._create_child('b2', )
-    a.b1.b2._create_child('b3', )
-    a.c1._create_child('c2', )
+    a._create_and_add_child('b1', )
+    a._create_and_add_child('c1', )
+    a.b1._create_and_add_child('b2', )
+    a.b1.b2._create_and_add_child('b3', )
+    a.c1._create_and_add_child('c2', )
 
     assert hasattr(a.c1, 'c2', )
     assert hasattr(a, 'b1')
@@ -54,16 +57,16 @@ def test_chainer_add_child(b):
 
 def test_chaining():
     a = MagicChain(push_up=True)
-    a._create_child('b1', )
-    a._create_child('c1', )
-    a.b1._create_child('b2', )
-    b3 = a.b1.b2._create_child('b3', )
-    a.c1._create_child('c2', )
+    a._create_and_add_child('b1', )
+    a._create_and_add_child('c1', )
+    a.b1._create_and_add_child('b2', )
+    b3 = a.b1.b2._create_and_add_child('b3', )
+    a.c1._create_and_add_child('c2', )
 
-    assert set(a.descendents().alias) == set(['b1', 'c1', 'b2', 'b3', 'c2'])
+    assert set(a.descendents().attr) == set(['b1', 'c1', 'b2', 'b3', 'c2'])
     a.descendents()[1]
     set(a.descendents())
-    assert set(b3.ancestors().alias) == set(['b2', 'b1', None])
+    assert set(b3.ancestors().attr) == set(['b2', 'b1', None])
 
     children = a.descendents()
 
@@ -72,9 +75,9 @@ def test_chaining():
 
 def test_ancestors():
     a = MagicChain(push_up=True)
-    a._create_child('b1', )
-    a.b1._create_child('c1', )
-    d1 = a.c1._create_child('d1', )
+    a._create_and_add_child('b1', )
+    a.b1._create_and_add_child('c1', )
+    d1 = a.c1._create_and_add_child('d1', )
 
     assert len(a.descendents(include_self=False)) == 3
     assert len(a.descendents(include_self=True)) == 4
@@ -84,17 +87,17 @@ def test_ancestors():
 
 def test_remove():
     a = MagicChain(push_up=True)
-    a._create_child('b1', )
-    a.b1._create_child('c1', )
-    a.c1._create_child('d1', )
-    a.d1._create_child('e1')
+    a._create_and_add_child('b1', )
+    a.b1._create_and_add_child('c1', )
+    a.c1._create_and_add_child('d1', )
+    a.d1._create_and_add_child('e1')
 
     assert hasattr(a, 'b1')
     assert hasattr(a, 'c1')
     assert hasattr(a, 'd1')
     assert hasattr(a, 'e1')
 
-    c1 = a.c1.delete()
+    c1 = a.c1.remove_parent()
     assert hasattr(a, 'b1')
     assert not hasattr(a, 'c1')
     assert not hasattr(a, 'd1')
@@ -108,18 +111,18 @@ def test_remove():
 
 def test_remove_children():
     a = MagicChain(push_up=True)
-    a._create_child('b1', )
-    a._create_child('b2', )
-    a.b1._create_child('c1', )
-    a.c1._create_child('d1', )
-    a.d1._create_child('e1')
+    a._create_and_add_child('b1', )
+    a._create_and_add_child('b2', )
+    a.b1._create_and_add_child('c1', )
+    a.c1._create_and_add_child('d1', )
+    a.d1._create_and_add_child('e1')
 
     assert hasattr(a, 'b1')
     assert hasattr(a, 'c1')
     assert hasattr(a, 'd1')
     assert hasattr(a, 'e1')
 
-    a.children.delete()
+    a.children.remove_parent()
 
     assert not hasattr(a, 'b2')
     assert not hasattr(a, 'b1')
@@ -131,9 +134,21 @@ def test_remove_children():
 def test_set_raises_attr_error():
 
     a = MagicChain()
-    a._create_child('b1')
+    a._create_and_add_child('b1')
     with pytest.raises(AttributeError):
         a.b1 = 4
+
+def test_sanitize_attr():
+
+    a = MagicChain()
+    with pytest.raises(AttributeError):
+        a._create_and_add_child('in')
+    with pytest.raises(AttributeError):
+        a._create_and_add_child('with')
+    n = 'something'
+    a._create_and_add_child(n)
+    with pytest.raises(AttributeError):
+        a._create_and_add_child(n)
 
 
 # def test_attributes():

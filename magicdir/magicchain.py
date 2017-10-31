@@ -11,6 +11,7 @@ class MagicList(list):
     def __call__(self, *args, **kwargs):
         return MagicList([x(*args, **kwargs) for x in self])
 
+
 class MagicChain(object):
     """ A tree-like class for chaining commands and attributes together """
 
@@ -43,10 +44,6 @@ class MagicChain(object):
     @property
     def parent(self):
         return self._parent
-
-    @property
-    def grandchildren(self):
-        return self.root._grandchildren
 
     @property
     def children(self):
@@ -112,34 +109,27 @@ class MagicChain(object):
         if hasattr(self, iden):
             raise AttributeError("identifier \"{}\" already exists".format(iden))
 
-    # def _sanitize_child(self, child, push_up=None):
-    #     if push_up is None:
-    #         push_up = self._push_up
-    #
-    #     self._sanitize_identifier(child.attr)
-    #     if push_up:
-    #         if hasattr(self.root, child.attr):
-    #             raise AttributeError("Cannot push attr {} to root. Try using a unique attr ({})".format(child.attr,
-    #                                                                                                       self.root._attributes()))
-
     def _add_as_child(self, child):
-        if child.attr in self._children:
-            raise AttributeError("Cannot add attr {}. Try using a unique attr.".format(child.attr))
+        self._validate_child(child)
         self._children[child.attr] = child
         return child
 
+    def _validate_child(self, child):
+        if child.attr in self._children:
+            raise AttributeError("Cannot add attr {}. Try using a unique attr.".format(child.attr))
+
     def _add_as_grandchild(self, child):
-        if child.attr in self.root._grandchildren:
-            raise AttributeError("Cannot push attr {} to root. Try using a unique attr.".format(child.attr))
+        self._validate_grandchild(child)
         self.root._grandchildren[child.attr] = child
         return child
 
+    def _validate_grandchild(self, child):
+        if child.attr in self.root._grandchildren:
+            raise AttributeError("Cannot push attr {} to root. Try using a unique attr.".format(child.attr))
+
     def _add(self, child, push_up=None):
         self._add_as_child(child)
-
-        if push_up is None:
-            push_up = self._push_up
-        if push_up:
+        if push_up or self._push_up:
             self._add_as_grandchild(child)
         return child
 
@@ -153,6 +143,7 @@ class MagicChain(object):
         for k, v in with_attributes.items():
             setattr(c, k, v)
         c.attr = attr
+
         return c
 
     def _create_and_add_child(self, attr, with_attributes=None, push_up=None):
@@ -208,3 +199,13 @@ class MagicChain(object):
             if name in c:
                 raise AttributeError("Cannot set attribute \"{}\".".format(name))
         return object.__setattr__(self, name, value)
+
+    # def _sanitize_child(self, child, push_up=None):
+    #     if push_up is None:
+    #         push_up = self._push_up
+    #
+    #     self._sanitize_identifier(child.attr)
+    #     if push_up:
+    #         if hasattr(self.root, child.attr):
+    #             raise AttributeError("Cannot push attr {} to root. Try using a unique attr ({})".format(child.attr,
+    #                                                                                                       self.root._attributes()))

@@ -61,7 +61,7 @@ class MagicChain(object):
     def is_root(self):
         return self is self.root
 
-    def s(self, include_self=False):
+    def descendents(self, include_self=False):
         c = []
         if include_self:
             c = [self]

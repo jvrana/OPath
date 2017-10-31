@@ -9,7 +9,7 @@ import glob
 class MagicPath(MagicChain):
 
     def __init__(self, name, push_up=True):
-        super().__init__(parent=None, push_up=push_up)
+        super().__init__(push_up=push_up)
         self.name = name
         self._parent_dir = ''
 

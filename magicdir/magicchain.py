@@ -15,7 +15,7 @@ class MagicList(list):
 class MagicChain(object):
     """ A tree-like class for chaining commands and attributes together """
 
-    def __init__(self, parent=None, push_up=None):
+    def __init__(self, push_up=None):
         """
         Chainer constructor
 
@@ -24,7 +24,7 @@ class MagicChain(object):
         :param push_up: whether to push up attributes to the root node
         :type push_up: boolean
         """
-        self._parent = parent
+        self._parent = None
         self._children = {}
         self._grandchildren = {}
         self._push_up = False

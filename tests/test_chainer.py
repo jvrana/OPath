@@ -17,10 +17,10 @@ def test_chain_equivalence():
     parent = MagicChain()
     assert parent.root == parent
 
-    child = MagicChain(parent=parent)
+    child = parent._create_and_add_child(('child'))
     assert child.root == parent
 
-    grandchild = MagicChain(parent=child)
+    grandchild = child._create_and_add_child(('grandchild'))
     assert grandchild.root == parent
 
     assert not grandchild.is_root()

@@ -42,6 +42,8 @@ def test_unsanitized_attr():
         env.add('in')
     with pytest.raises(AttributeError):
         env.add('something')
+    with pytest.raises(AttributeError):
+        env.add('something', attr='somethingelse')
 
 def test_unique_attrs():
     env = MagicDir('bin')

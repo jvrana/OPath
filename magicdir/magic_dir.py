@@ -131,8 +131,8 @@ class MagicDir(MagicPath):
         if attr is None:
             attr = name
         if name in self.children.name:
-            raise AttributeError("Folder name \"{}\" already exists. Existing folders: {}".format(name,
-                  ', '.join(self.childen.name)))
+            raise AttributeError("File name \"{}\" already exists. Existing files: {}".format(name,
+                  ', '.join(self.files.name)))
         return self._create_and_add_child(attr, with_attributes={"name": name})
 
     def add_file(self, name, attr=None):
@@ -144,7 +144,7 @@ class MagicDir(MagicPath):
         file = MagicFile(name)
         file._parent = self
         file.attr = attr
-        self._add_child(file)
+        self._add(file)
         return file
 
     def print(self, print_files=False, indent=4, max_level=None, level=0, list_missing=True):

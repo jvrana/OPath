@@ -35,13 +35,12 @@ def test_attr():
 
 def test_unsanitized_attr():
     env = MagicDir('bin')
-    env.add('something')
+    assert env.add('something') == env.add('something')
+    assert env.something.add('core') == env.add('something').add('core') == env.something.core
     with pytest.raises(AttributeError):
         env.add('alskdf;;asd;flj')
     with pytest.raises(AttributeError):
         env.add('in')
-    with pytest.raises(AttributeError):
-        env.add('something')
     with pytest.raises(AttributeError):
         env.add('something', attr='somethingelse')
 
@@ -142,3 +141,9 @@ def test_remove_children():
 
     g = env.descendents()
     assert len(g) == 0
+
+def test_chained():
+
+    env = MagicDir('bin')
+    env.add('A1').add('B1')
+    env.add('C1').add("D1")

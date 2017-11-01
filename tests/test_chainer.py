@@ -1,6 +1,8 @@
 from magicdir import *
 import pytest
 
+# TODO: better testing for push_up = False
+
 def test_chain_list():
 
     x = ["the", "cow", "jumped"]
@@ -62,7 +64,7 @@ def test_chaining():
     a.b1._create_and_add_child('b2', )
     b3 = a.b1.b2._create_and_add_child('b3', )
     a.c1._create_and_add_child('c2', )
-
+    print(a.descendents().attr)
     assert set(a.descendents().attr) == set(['b1', 'c1', 'b2', 'b3', 'c2'])
     a.descendents()[1]
     set(a.descendents())

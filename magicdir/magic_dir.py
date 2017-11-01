@@ -42,19 +42,34 @@ class MagicPath(MagicChain):
         return self.abspath.is_dir()
 
     def write(self, filename, mode, data, *args, **kwargs):
-        with self.open(filename, mode, *args, **kwargs) as f:
+        makedirs(self.abspath)
+        with self.open(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
             f.write(data)
 
     def read(self, filename, mode, *args, **kwargs):
-        with self.open(filename, mode, *args, **kwargs) as f:
+        with self.open(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
             return f.read()
 
     def open(self, filename, mode, *args, **kwargs):
+        makedirs(self.abspath)
         return fopen(str(Path(self.abspath, filename)), mode, *args, **kwargs)
 
     def __repr__(self):
         return "<{}(\"{}\")>".format(self.__class__.__name__, self.name, self.relpath)
 
+    def print(self, print_files=False, indent=4, max_level=None, level=0, list_missing=True):
+        padding = '|   ' * level
+        name = self.name
+        if self.attr and name != self.attr:
+            name += " (\"{}\")".format(self.attr)
+        missing_tag = ''
+        if list_missing and not self.exists():
+            missing_tag = "*"
+        print("{padding}{missing}{name}".format(missing=missing_tag, padding=padding, name=name))
+
+        level += 1
+        for name, child in self._children.items():
+            child.print(print_files, indent, max_level, level, list_missing)
 
 class MagicFile(MagicPath):
 
@@ -127,40 +142,35 @@ class MagicDir(MagicPath):
     def collect(self):
         """ collects new directories that exist on the local machine and add to tree """
 
-    def _validate_child(self, child, push_up):
-        super()._validate_child(child, push_up)
-        if child.name in self.children.name:
-            raise AttributeError("File name \"{}\" already exists. Existing files: {}".format(child.name,
-                  ', '.join(self.files.name)))
+    def _get_if_exists(self, name, attr):
+        if self.has(attr):
+            c = self.get(attr)
+            if c.name == name:
+                return c
 
     # TODO: exist_ok kwarg
-    def add(self, name, attr=None):
+    def add(self, name, attr=None, push_up=True):
         if attr is None:
             attr = name
-        return self._create_and_add_child(attr, with_attributes={"name": name})
+        e = self._get_if_exists(name, attr)
+        if e:
+            return e
+        if name in self.children.name:
+            raise AttributeError("Dir name \"{}\" already exists for {}. Existing dirnames: {}".format(name, self,
+                  ', '.join(self.children.name)))
+        return self._create_and_add_child(attr, with_attributes={"name": name}, push_up=push_up)
 
-    def add_file(self, name, attr=None):
+    def add_file(self, name, attr=None, push_up=True):
         if attr is None:
             attr = name
+        e = self._get_if_exists(name, attr)
+        if e:
+            return e
         if name in self.files.name:
             raise AttributeError("File name \"{}\" already exists. Existing files: {}".format(name,
                   ', '.join(self.files.name)))
         file = MagicFile(name)
         file._parent = self
-        file.attr = attr
-        self._add(file)
+        self._sanitize_identifier(attr)
+        self._add(attr, file, push_up=push_up)
         return file
-
-    def print(self, print_files=False, indent=4, max_level=None, level=0, list_missing=True):
-        padding = '|   ' * level
-        name = self.name
-        if self.attr and name != self.attr:
-            name += " (\"{}\")".format(self.attr)
-        missing_tag = ''
-        if list_missing and not self.exists():
-            missing_tag = "*"
-        print("{padding}{missing}{name}".format(missing=missing_tag, padding=padding, name=name))
-
-        level += 1
-        for name, child in self._children.items():
-            child.print(print_files, indent, max_level, level, list_missing)

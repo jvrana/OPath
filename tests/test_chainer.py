@@ -152,7 +152,10 @@ def test_sanitize_attr():
     with pytest.raises(AttributeError):
         a._create_and_add_child(n)
 
+def test_dont_sanitize_attr():
 
+    a = MagicChain()
+    a._create_and_add_child('in', make_attr=False)
 # def test_attributes():
 #     a = Chainer(push_up=True)
 #     a._create_child('b1', )

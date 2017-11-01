@@ -133,8 +133,9 @@ class MagicChain(object):
     #     if child.attr in self.root._grandchildren:
     #         raise AttributeError("Cannot push attr {} to root. Try using a unique attr.".format(child.attr))
 
-    def _add(self, attr, child, push_up=None):
-        self._sanitize_identifier(attr)
+    def _add(self, attr, child, push_up=None, make_attr=True):
+        if make_attr:
+            self._sanitize_identifier(attr)
         if push_up is None:
             push_up = self._push_up
         self._validate_attr(attr, push_up)
@@ -155,11 +156,11 @@ class MagicChain(object):
             setattr(c, k, v)
         return c
 
-    def _create_and_add_child(self, attr, with_attributes=None, push_up=None):
+    def _create_and_add_child(self, attr, with_attributes=None, push_up=None, make_attr=True):
         if push_up is None:
             push_up = self._push_up
         child = self._create_child(with_attributes)
-        return self._add(attr, child, push_up=push_up)
+        return self._add(attr, child, push_up=push_up, make_attr=make_attr)
 
     def _remove_child(self, attr):
         if attr in self._children:

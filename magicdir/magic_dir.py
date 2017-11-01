@@ -149,28 +149,28 @@ class MagicDir(MagicPath):
                 return c
 
     # TODO: exist_ok kwarg
-    def add(self, name, attr=None, push_up=True):
+    def add(self, name, attr=None, push_up=True, make_attr=True):
         if attr is None:
             attr = name
         e = self._get_if_exists(name, attr)
-        if e:
+        if e and issubclass(e.__class__, MagicDir):
             return e
         if name in self.children.name:
             raise AttributeError("Dir name \"{}\" already exists for {}. Existing dirnames: {}".format(name, self,
                   ', '.join(self.children.name)))
-        return self._create_and_add_child(attr, with_attributes={"name": name}, push_up=push_up)
+        return self._create_and_add_child(attr, with_attributes={"name": name}, push_up=push_up, make_attr=make_attr)
 
-    def add_file(self, name, attr=None, push_up=True):
+    def add_file(self, name, attr=None, push_up=True, make_attr=True):
         if attr is None:
             attr = name
         e = self._get_if_exists(name, attr)
-        if e:
+        if e and issubclass(e.__class__, MagicFile):
             return e
         if name in self.files.name:
             raise AttributeError("File name \"{}\" already exists. Existing files: {}".format(name,
                   ', '.join(self.files.name)))
         file = MagicFile(name)
         file._parent = self
-        self._sanitize_identifier(attr)
-        self._add(attr, file, push_up=push_up)
+        # self._sanitize_identifier(attr)
+        self._add(attr, file, push_up=push_up, make_attr=make_attr)
         return file

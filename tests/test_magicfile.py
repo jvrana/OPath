@@ -30,6 +30,7 @@ def test_file_denied_access(file_env):
 
 
 def test_file_write_remove(file_env):
+    file_env.rmdirs()
     file_env.mkdirs()
     assert not file_env.testtxt.abspath.is_file()
     assert not file_env.testtxt.abspath.is_dir()
@@ -76,3 +77,22 @@ def test_retrieve_existing_file(file_env):
 
     file_env.add_file('log.txt', attr='log')
     file_env.add_file('log.txt', attr='log')
+
+def test_dynamic_file_creation(file_env):
+
+    file_env.rmdirs()
+    file_env.mkdirs()
+
+    data = str(uuid.uuid4())
+    file_env.A2.add_file("new_file.txt", attr="file").write('w', data)
+    assert file_env.file.read('r') == data
+
+
+def test_write_file_exists(file_env):
+
+    file_env.rmdirs()
+    file_env.mkdirs()
+
+    data = str(uuid.uuid4())
+    file_env.A2.add_file("new_file.txt", attr="file").write('w', data)
+    assert file_env.file.read('r') == data

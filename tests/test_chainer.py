@@ -1,6 +1,8 @@
 from magicdir import *
 import pytest
 
+# TODO: better testing for push_up = False
+
 def test_chain_list():
 
     x = ["the", "cow", "jumped"]

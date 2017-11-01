@@ -30,19 +30,15 @@ class MagicChain(object):
         self._push_up = False
         if push_up is not None:
             self._push_up = push_up
-        self._attr = None
 
     # TODO: add dynamic attr that looks at parent? It would be really slow...
 
     @property
     def attr(self):
-        return self._attr
-
-    # TODO: should reset be disallowed?
-    @attr.setter
-    def attr(self, a):
-        self._sanitize_identifier(a)
-        self._attr = a
+        if self.parent:
+            for k, v in self.parent._children.items():
+                if v is self:
+                    return k
 
     @property
     def parent(self):
@@ -110,14 +106,14 @@ class MagicChain(object):
         if not iden.isidentifier():
             raise AttributeError("\"{}\" is not a valid identifier.".format(iden))
 
-    def _validate_child(self, child, push_up=None):
+    def _validate_attr(self, attr, push_up=None):
         if push_up is None:
             push_up = self._push_up
-        if hasattr(self, child.attr):
-            raise AttributeError("Attribute \"{}\" already exists".format(child.attr))
+        if hasattr(self, attr):
+            raise AttributeError("Attribute \"{}\" already exists".format(attr))
         if push_up:
-            if hasattr(self.root, child.attr):
-                raise AttributeError("Cannot push up attr \"{}\". Attribute already exists".format(child.attr))
+            if hasattr(self.root, attr):
+                raise AttributeError("Cannot push up attr \"{}\". Attribute already exists".format(attr))
 
     # def _add_as_child(self, child):
     #     # self._validate_child(child)
@@ -137,16 +133,18 @@ class MagicChain(object):
     #     if child.attr in self.root._grandchildren:
     #         raise AttributeError("Cannot push attr {} to root. Try using a unique attr.".format(child.attr))
 
-    def _add(self, child, push_up=None):
+    def _add(self, attr, child, push_up=None):
+        self._sanitize_identifier(attr)
         if push_up is None:
             push_up = self._push_up
-        self._validate_child(child, push_up)
-        self._children[child.attr] = child
+        self._validate_attr(attr, push_up)
+        self._children[attr] = child
         if push_up:
-            self.root._grandchildren[child.attr] = child
+            if attr not in self.root._children:
+                self.root._grandchildren[attr] = child
         return child
 
-    def _create_child(self, attr, with_attributes=None):
+    def _create_child(self, with_attributes=None):
         c = copy(self)
         c._parent = self
         c._children = {}
@@ -155,15 +153,13 @@ class MagicChain(object):
             with_attributes = {}
         for k, v in with_attributes.items():
             setattr(c, k, v)
-        c.attr = attr
-
         return c
 
     def _create_and_add_child(self, attr, with_attributes=None, push_up=None):
         if push_up is None:
             push_up = self._push_up
-        child = self._create_child(attr, with_attributes)
-        return self._add(child, push_up=push_up)
+        child = self._create_child(with_attributes)
+        return self._add(attr, child, push_up=push_up)
 
     def _remove_child(self, attr):
         if attr in self._children:
@@ -187,6 +183,9 @@ class MagicChain(object):
 
     def get(self, attr):
         return getattr(self, attr)
+
+    def has(self, attr):
+        return hasattr(self, attr)
 
     # def _remove_grandchild(self, attr):
     #     gc = self.root._grandchildren
@@ -213,14 +212,8 @@ class MagicChain(object):
                 raise AttributeError("Cannot set attribute \"{}\".".format(name))
         return object.__setattr__(self, name, value)
 
-    # TODO: add __dir__
+    # # TODO: add __dir__
+    def __dir__(self):
+        print('dir called')
+        return super().__dir__() + list(self._children.keys()) + list(self._grandchildren.keys())
 
-    # def _sanitize_child(self, child, push_up=None):
-    #     if push_up is None:
-    #         push_up = self._push_up
-    #
-    #     self._sanitize_identifier(child.attr)
-    #     if push_up:
-    #         if hasattr(self.root, child.attr):
-    #             raise AttributeError("Cannot push attr {} to root. Try using a unique attr ({})".format(child.attr,
-    #                                                                                                       self.root._attributes()))

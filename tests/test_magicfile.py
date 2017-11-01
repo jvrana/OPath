@@ -65,3 +65,14 @@ def test_raise_filename_error(file_env):
 
     with pytest.raises(AttributeError):
         file_env.A1.add_file(file_env.testtxt.name, attr='dflkdjlf')
+
+def test_retrieve_existing_file(file_env):
+
+    file_env.mkdirs()
+    data = str(uuid.uuid4())
+    f = file_env.A1.add_file("test.txt", attr="testtxt")
+    f2 = file_env.A1.add_file("test.txt", attr="testtxt")
+    assert f == f2
+
+    file_env.add_file('log.txt', attr='log')
+    file_env.add_file('log.txt', attr='log')

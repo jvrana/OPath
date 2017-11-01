@@ -127,28 +127,37 @@ class MagicDir(MagicPath):
     def collect(self):
         """ collects new directories that exist on the local machine and add to tree """
 
-    def _validate_child(self, child, push_up):
-        super()._validate_child(child, push_up)
-        if child.name in self.children.name:
-            raise AttributeError("File name \"{}\" already exists. Existing files: {}".format(child.name,
-                  ', '.join(self.files.name)))
+    def _get_if_exists(self, name, attr):
+        if self.has(attr):
+            c = self.get(attr)
+            if c.name == name:
+                return c
 
     # TODO: exist_ok kwarg
     def add(self, name, attr=None):
         if attr is None:
             attr = name
+        e = self._get_if_exists(name, attr)
+        if e and type(e) is MagicDir:
+            return e
+        if name in self.children.name:
+            raise AttributeError("Dir name \"{}\" already exists for {}. Existing dirnames: {}".format(name, self,
+                  ', '.join(self.children.name)))
         return self._create_and_add_child(attr, with_attributes={"name": name})
 
     def add_file(self, name, attr=None):
         if attr is None:
             attr = name
+        e = self._get_if_exists(name, attr)
+        if e and type(e) is MagicFile:
+            return e
         if name in self.files.name:
             raise AttributeError("File name \"{}\" already exists. Existing files: {}".format(name,
                   ', '.join(self.files.name)))
         file = MagicFile(name)
         file._parent = self
-        file.attr = attr
-        self._add(file)
+        self._sanitize_identifier(attr)
+        self._add(attr, file)
         return file
 
     def print(self, print_files=False, indent=4, max_level=None, level=0, list_missing=True):

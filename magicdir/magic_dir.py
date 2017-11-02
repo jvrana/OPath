@@ -98,7 +98,7 @@ class MagicFile(MagicPath):
     def rm(self):
         """ Removes file if it exists. """
         if self.exists():
-            os.remove(self.abspath)
+            os.remove(str(self.abspath))
 
 
 class MagicDir(MagicPath):

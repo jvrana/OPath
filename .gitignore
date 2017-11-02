@@ -59,3 +59,4 @@ fabric.properties
 /tests/env1/bin/
 /tests/.cache/
 /magicdir.egg-info/
+/.cache/

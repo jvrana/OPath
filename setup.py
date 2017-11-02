@@ -7,6 +7,7 @@ __author__ = 'Justin Dane Vrana'
 __license__ = 'MIT'
 __package__ = "magicdir"
 __readme__ = "README"
+__version__ = "0.2.0a"
 
 tests_require = [
     'pytest',
@@ -25,23 +26,10 @@ classifiers = [],
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
-def get_property(prop, project):
-    result = re.search(r'{}\s*=\s*[\'"]([^\'"]*)[\'"]'.format(prop), open(project + '/__init__.py').read())
-    if result:
-        return result.group(1)
-    else:
-        raise RuntimeError("Unable to find property {0} in project \"{1}\".".format(prop, project))
-
-def get_version():
-    try:
-        return get_property("__version__", __package__)
-    except RuntimeError as e:
-        raise RuntimeError("Unable to find __version__ string in project \"{0}\"".format(__package__))
-
 # setup
 setup(
         name=__package__,
-        version=get_version(),
+        version=__version__,
         packages=[__package__],
         url='https://github.com/jvrana/magicdir',
         license=__license__,

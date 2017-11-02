@@ -10,7 +10,8 @@ def copytree(src, dst):
     return shutil.copytree(str(src), str(dst))
 
 def makedirs(path, *args, **kwargs):
-    return os.makedirs(str(path), *args, **kwargs)
+    if not os.path.isdir(str(path)):
+        return os.makedirs(str(path), *args, **kwargs)
 
 def listdir(path):
     return os.listdir(str(path))

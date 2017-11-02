@@ -20,3 +20,13 @@ def testing_dirs():
     env1.mkdir()
     env2.mkdir()
     return env1, env2
+
+@pytest.fixture(scope="function")
+def env():
+    env = MagicDir('bin')
+    env.set_dir(testing_dirs()[0])
+    env.add('A1')
+    env.A1.add('A2')
+    env.add('B1')
+    env.B1.add('B2')
+    return env

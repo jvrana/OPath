@@ -293,8 +293,6 @@ class MagicDir(MagicPath):
         """ Write  a file at this location """
         makedirs(self.abspath)
         with self.open(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
-            print('writing data')
-            print(data)
             f.write(data)
 
     def read(self, filename, mode, *args, **kwargs):

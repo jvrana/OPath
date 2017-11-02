@@ -15,6 +15,27 @@ Branch | Build | Coverage
 Dealing with paths and directories isn't rocket science, but it can be a pain. **MagicDir** allows you to build directory trees by treating
 your directory tree as a first-class object.
 
+
+Stop writing your directory trees like this:
+```python
+# define paths
+top = os.path.abspath('top')
+middle = os.path.join(str(top), 'middle')
+bottom = os.path.join(str(middle), 'bottom')
+os.makedirs(bottom)
+with open(os.path.join(bottom, 'bottomlog.txt', 'w') as f:
+    f.write("some log information")
+```
+
+And start writing them like this:
+```python
+# define paths
+env = MagicDir('top').add('middle').add('bottom').root
+env.bottom.write('log.txt', 'w', 'some log information')
+```
+
+Live usage:
+
 ![live_example](images/magicdir_example.gif?raw=true)
 
 Its very easy to create, move, or delete directory trees. For example, the following builds the directory

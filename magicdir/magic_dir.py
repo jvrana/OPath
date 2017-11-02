@@ -7,7 +7,7 @@ import glob
 
 
 class MagicPath(MagicChain):
-
+    """ A generic path """
     def __init__(self, name, push_up=True):
         super().__init__(push_up=push_up)
         self.name = name
@@ -78,6 +78,7 @@ class MagicPath(MagicChain):
             child.print(print_files, indent, max_level, level, list_missing)
 
 class MagicFile(MagicPath):
+    """ A file object """
 
     def write(self, mode, data, *args, **kwargs):
         """ Write data to a file """
@@ -102,6 +103,7 @@ class MagicFile(MagicPath):
 
 
 class MagicDir(MagicPath):
+    """ A directory object """
 
     @property
     def files(self):

@@ -13,7 +13,7 @@ class MagicList(list):
 
 
 class MagicChain(object):
-    """ A tree-like class for chaining commands and attributes together """
+    """ A tree-like class for chaining commands and attributes together with special root/head handling """
 
     def __init__(self, push_up=None):
         """

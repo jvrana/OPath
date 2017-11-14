@@ -3,13 +3,35 @@ from copy import copy
 
 
 class MagicList(list):
-    """ List-like class that collects attributes and applies functions """
+    """List-like class that collects attributes and applies functions
+    but functions like a list in every other regard.
+
+        >>> ml = MagicList(["string1   ", "   string2"])
+        >>> m1.strip().upper()
+        >>> #=> ["STRING1", "STRING2"]
+    """
 
     def __getattr__(self, item):
         return MagicList([getattr(x, item) for x in self])
 
     def __call__(self, *args, **kwargs):
         return MagicList([x(*args, **kwargs) for x in self])
+
+
+def magiclist(fxn):
+    """Decorator that turns a returned value from a list to a MagicList (if possible)"""
+
+    def magiclist_wrapper(*args, **kwargs):
+        ret = fxn(*args, **kwargs)
+        try:
+            iter(ret)
+            ret = MagicList(ret)
+        except TypeError:
+            # not iterable
+            pass
+        return ret
+
+    return magiclist_wrapper
 
 
 class MagicChain(object):
@@ -45,8 +67,9 @@ class MagicChain(object):
         return self._parent
 
     @property
+    @magiclist
     def children(self):
-        return MagicList(self._children.values())
+        return self._children.values()
 
     @property
     def root(self):
@@ -57,6 +80,7 @@ class MagicChain(object):
     def is_root(self):
         return self is self.root
 
+    @magiclist
     def descendents(self, include_self=False):
         c = []
         if include_self:
@@ -66,15 +90,16 @@ class MagicChain(object):
             c += children
             for child in children:
                 c += child.descendents()
-        return MagicList(c)
+        return c
 
+    @magiclist
     def ancestors(self, include_self=False):
         p = []
         if self.parent is not None:
             p += self.parent.ancestors(include_self=True)
         if include_self:
             p += [self]
-        return MagicList(p)
+        return p
 
     # def ancestor_attrs(self, attr, include_self=False):
     #     nodes = self.ancestors(include_self=include_self)

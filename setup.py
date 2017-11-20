@@ -7,7 +7,7 @@ __author__ = 'Justin Dane Vrana'
 __license__ = 'MIT'
 __package__ = "magicdir"
 __readme__ = "README"
-__version__ = "0.2.3a"
+__version__ = "0.2.4a"
 
 tests_require = [
     'pytest',

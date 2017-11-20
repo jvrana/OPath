@@ -48,6 +48,9 @@ class MagicPath(MagicChain):
         return "<{}(\"{}\")>".format(self.__class__.__name__, self.name, self.relpath)
 
     def print(self, print_files=False, indent=4, max_level=None, level=0, list_missing=True):
+        print(self.file_structure(print_files=print_files, indent=indent, max_level=max_level, level=0, list_missing=True))
+
+    def file_structure(self, print_files=False, indent=4, max_level=None, level=0, list_missing=True):
         """
         Recursively print the file structure
 
@@ -71,11 +74,12 @@ class MagicPath(MagicChain):
         missing_tag = ''
         if list_missing and not self.exists():
             missing_tag = "*"
-        print("{padding}{missing}{name}".format(missing=missing_tag, padding=padding, name=name))
-
+        s = "{padding}{missing}{name}".format(missing=missing_tag, padding=padding, name=name)
+        s += '\n'
         level += 1
         for name, child in self._children.items():
-            child.print(print_files, indent, max_level, level, list_missing)
+            s += child.file_structure(print_files, indent, max_level, level, list_missing)
+        return s
 
 class MagicFile(MagicPath):
     """ A file object """

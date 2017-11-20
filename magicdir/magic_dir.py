@@ -209,9 +209,11 @@ class MagicDir(MagicPath):
         access to the moved directories. """
         oldpath = self.abspath
         self.remove_parent()
-        copytree(oldpath, Path(new_parent, self.name))
+        if self.exists():
+            copytree(oldpath, Path(new_parent, self.name))
         self.set_dir(new_parent)
-        rmtree(oldpath)
+        if self.exists():
+            rmtree(oldpath)
         return self
 
     def exists(self):

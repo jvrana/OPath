@@ -78,6 +78,15 @@ def test_mvdir(env, testing_dirs):
     assert Path(testing_dirs[1], 'bin', 'A1', 'A2', filename).is_file()
     assert not Path(testing_dirs[0], 'bin', 'A1', 'A2', filename).is_file()
 
+def test_mvdir_doesnt_exist(env, testing_dirs):
+    # folder 1
+    env.set_dir(testing_dirs[0])
+    env.rmdirs()
+    # env.mkdirs()
+
+    # folder 2
+    env.mvdirs(testing_dirs[1])
+
 def test_open(env):
 
     env.mkdirs()

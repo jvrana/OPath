@@ -96,6 +96,14 @@ class MagicFile(MagicPath):
         """ Opens a file for reading or writing """
         return self.parent.open(self.name, mode, *args, **kwargs)
 
+    def dump(self, data, mode='w', **kwargs):
+        """Dump data as a json"""
+        return self.parent.dump(self.name, mode, data, **kwargs)
+
+    def load(self, mode='r', **kwargs):
+        """Load data from json"""
+        return self.parent.load(self.name, mode, **kwargs)
+
     def exists(self):
         """ Whether the file exists """
         return Path(self.abspath).is_file()
@@ -312,3 +320,14 @@ class MagicDir(MagicPath):
         """ Open a file at this location """
         utils.makedirs(self.abspath)
         return utils.fopen(str(Path(self.abspath, filename)), mode, *args, **kwargs)
+
+    def dump(self, filename, mode, data, *args, **kwargs):
+        """Dump data to json"""
+        utils.makedirs(self.abspath)
+        with self.open(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
+            json.dump(data, f)
+
+    def load(self, filename, mode, *args, **kwargs):
+        """Load data from a json"""
+        with self.open(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
+            return json.load(f)

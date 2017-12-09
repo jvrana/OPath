@@ -162,7 +162,9 @@ class MagicChain(object):
 
     def _sanitize_identifier(self, iden):
         """Validates the identifier to ensure it is not a reserve keyword 
-        used in python ('which', 'in', 'class', 'else', etc.)"""
+        used in python ('which', 'in', 'class', 'else', etc.). Other strings
+        such as 'something.else' that cannot be translated into an attribute
+        are also disallowed."""
         if keyword.iskeyword(iden):
             raise AttributeError("\"{}\" is reserved and is not a valid identified.".format(iden))
         if not iden.isidentifier():

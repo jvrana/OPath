@@ -1,10 +1,10 @@
 from .magicchain import MagicChain, MagicList
-from pathlib import *
+from pathlib import Path
 from copy import deepcopy
-from .magicchain import MagicChain
-from .utils import *
+from . import utils
+import os
 import glob
-
+import json
 
 class MagicPath(MagicChain):
     """ A generic path """
@@ -178,7 +178,7 @@ class MagicDir(MagicPath):
         :rtype: MagicDir
         """
         for p in self.abspaths:
-            makedirs(p, exist_ok=True)
+            utils.makedirs(p, exist_ok=True)
         return self
 
     def rmdirs(self):
@@ -189,7 +189,7 @@ class MagicDir(MagicPath):
         :rtype: MagicDir
         """
         if self.abspath.is_dir():
-            rmtree(self.abspath)
+            utils.rmtree(self.abspath)
         return self
 
     def cpdirs(self, new_parent):
@@ -201,7 +201,7 @@ class MagicDir(MagicPath):
         :return: copied directory
         :rtype: MagicDir
         """
-        copytree(self.abspath, Path(new_parent, self.name))
+        utils.copytree(self.abspath, Path(new_parent, self.name))
         copied_dirs = deepcopy(self)
         copied_dirs.remove_parent()
         copied_dirs.set_dir(new_parent)
@@ -214,10 +214,10 @@ class MagicDir(MagicPath):
         oldpath = self.abspath
         self.remove_parent()
         if self.exists():
-            copytree(oldpath, Path(new_parent, self.name))
+            utils.copytree(oldpath, Path(new_parent, self.name))
         self.set_dir(new_parent)
         if self.exists():
-            rmtree(oldpath)
+            utils.rmtree(oldpath)
         return self
 
     def exists(self):
@@ -226,7 +226,7 @@ class MagicDir(MagicPath):
 
     def ls(self):
         """ Lists the files that exist in directory """
-        return listdir(self.abspath)
+        return utils.listdir(self.abspath)
 
     def glob(self, pattern):
         return glob.glob(str(Path(self.abspath, pattern)))
@@ -299,7 +299,7 @@ class MagicDir(MagicPath):
 
     def write(self, filename, mode, data, *args, **kwargs):
         """ Write  a file at this location """
-        makedirs(self.abspath)
+        utils.makedirs(self.abspath)
         with self.open(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
             f.write(data)
 
@@ -310,5 +310,5 @@ class MagicDir(MagicPath):
 
     def open(self, filename, mode, *args, **kwargs):
         """ Open a file at this location """
-        makedirs(self.abspath)
-        return fopen(str(Path(self.abspath, filename)), mode, *args, **kwargs)
+        utils.makedirs(self.abspath)
+        return utils.fopen(str(Path(self.abspath, filename)), mode, *args, **kwargs)

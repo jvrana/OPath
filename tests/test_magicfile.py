@@ -1,5 +1,5 @@
 import pytest
-from magicdir import *
+from pathlib import Path
 import uuid
 
 

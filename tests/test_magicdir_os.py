@@ -1,8 +1,7 @@
 import uuid
 
-import pytest
-
-from magicdir import *
+from pathlib import Path
+from magicdir import MagicDir
 
 
 def test_mkdir_rmdir(env):

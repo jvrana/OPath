@@ -1,13 +1,13 @@
 from .magicchain import MagicChain, MagicList
-from pathlib import *
+from pathlib import Path
 from copy import deepcopy
-from .magicchain import MagicChain
-from .utils import *
+from . import utils
+import os
 import glob
-
+import json
 
 class MagicPath(MagicChain):
-
+    """ A generic path """
     def __init__(self, name, push_up=True):
         super().__init__(push_up=push_up)
         self.name = name
@@ -48,6 +48,9 @@ class MagicPath(MagicChain):
         return "<{}(\"{}\")>".format(self.__class__.__name__, self.name, self.relpath)
 
     def print(self, print_files=False, indent=4, max_level=None, level=0, list_missing=True):
+        print(self.file_structure(print_files=print_files, indent=indent, max_level=max_level, level=0, list_missing=True))
+
+    def file_structure(self, print_files=False, indent=4, max_level=None, level=0, list_missing=True):
         """
         Recursively print the file structure
 
@@ -71,13 +74,15 @@ class MagicPath(MagicChain):
         missing_tag = ''
         if list_missing and not self.exists():
             missing_tag = "*"
-        print("{padding}{missing}{name}".format(missing=missing_tag, padding=padding, name=name))
-
+        s = "{padding}{missing}{name}".format(missing=missing_tag, padding=padding, name=name)
+        s += '\n'
         level += 1
         for name, child in self._children.items():
-            child.print(print_files, indent, max_level, level, list_missing)
+            s += child.file_structure(print_files, indent, max_level, level, list_missing)
+        return s
 
 class MagicFile(MagicPath):
+    """ A file object """
 
     def write(self, mode, data, *args, **kwargs):
         """ Write data to a file """
@@ -91,6 +96,14 @@ class MagicFile(MagicPath):
         """ Opens a file for reading or writing """
         return self.parent.open(self.name, mode, *args, **kwargs)
 
+    def dump(self, data, mode='w', **kwargs):
+        """Dump data as a json"""
+        return self.parent.dump(self.name, mode, data, **kwargs)
+
+    def load(self, mode='r', **kwargs):
+        """Load data from json"""
+        return self.parent.load(self.name, mode, **kwargs)
+
     def exists(self):
         """ Whether the file exists """
         return Path(self.abspath).is_file()
@@ -102,6 +115,7 @@ class MagicFile(MagicPath):
 
 
 class MagicDir(MagicPath):
+    """ A directory object """
 
     @property
     def files(self):
@@ -172,7 +186,7 @@ class MagicDir(MagicPath):
         :rtype: MagicDir
         """
         for p in self.abspaths:
-            makedirs(p, exist_ok=True)
+            utils.makedirs(p, exist_ok=True)
         return self
 
     def rmdirs(self):
@@ -183,7 +197,7 @@ class MagicDir(MagicPath):
         :rtype: MagicDir
         """
         if self.abspath.is_dir():
-            rmtree(self.abspath)
+            utils.rmtree(self.abspath)
         return self
 
     def cpdirs(self, new_parent):
@@ -195,7 +209,7 @@ class MagicDir(MagicPath):
         :return: copied directory
         :rtype: MagicDir
         """
-        copytree(self.abspath, Path(new_parent, self.name))
+        utils.copytree(self.abspath, Path(new_parent, self.name))
         copied_dirs = deepcopy(self)
         copied_dirs.remove_parent()
         copied_dirs.set_dir(new_parent)
@@ -207,9 +221,11 @@ class MagicDir(MagicPath):
         access to the moved directories. """
         oldpath = self.abspath
         self.remove_parent()
-        copytree(oldpath, Path(new_parent, self.name))
+        if self.exists():
+            utils.copytree(oldpath, Path(new_parent, self.name))
         self.set_dir(new_parent)
-        rmtree(oldpath)
+        if self.exists():
+            utils.rmtree(oldpath)
         return self
 
     def exists(self):
@@ -218,7 +234,7 @@ class MagicDir(MagicPath):
 
     def ls(self):
         """ Lists the files that exist in directory """
-        return listdir(self.abspath)
+        return utils.listdir(self.abspath)
 
     def glob(self, pattern):
         return glob.glob(str(Path(self.abspath, pattern)))
@@ -291,7 +307,7 @@ class MagicDir(MagicPath):
 
     def write(self, filename, mode, data, *args, **kwargs):
         """ Write  a file at this location """
-        makedirs(self.abspath)
+        utils.makedirs(self.abspath)
         with self.open(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
             f.write(data)
 
@@ -302,5 +318,16 @@ class MagicDir(MagicPath):
 
     def open(self, filename, mode, *args, **kwargs):
         """ Open a file at this location """
-        makedirs(self.abspath)
-        return fopen(str(Path(self.abspath, filename)), mode, *args, **kwargs)
+        utils.makedirs(self.abspath)
+        return utils.fopen(str(Path(self.abspath, filename)), mode, *args, **kwargs)
+
+    def dump(self, filename, mode, data, *args, **kwargs):
+        """Dump data to json"""
+        utils.makedirs(self.abspath)
+        with self.open(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
+            json.dump(data, f)
+
+    def load(self, filename, mode, *args, **kwargs):
+        """Load data from a json"""
+        with self.open(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
+            return json.load(f)

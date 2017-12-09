@@ -6,18 +6,23 @@ import shutil
 def rmtree(path):
     return shutil.rmtree(str(path))
 
+
 def copytree(src, dst):
     return shutil.copytree(str(src), str(dst))
+
 
 def makedirs(path, *args, **kwargs):
     if not os.path.isdir(str(path)):
         return os.makedirs(str(path), *args, **kwargs)
 
+
 def listdir(path):
     return os.listdir(str(path))
 
+
 def walk(path):
     return os.walk(str(path))
+
 
 def fopen(path, mode, *args, **kwargs):
     return open(str(path), mode, *args, **kwargs)

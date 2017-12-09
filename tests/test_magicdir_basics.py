@@ -1,4 +1,4 @@
-from magicdir import *
+from magicdir import MagicDir
 import pytest
 
 @pytest.fixture(params=[True, False])

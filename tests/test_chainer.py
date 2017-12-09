@@ -1,10 +1,11 @@
-from magicdir import *
 import pytest
+
+from magicdir import MagicChain, MagicList
+
 
 # TODO: better testing for push_up = False
 
 def test_chain_list():
-
     x = ["the", "cow", "jumped"]
     x = MagicList(x)
     print(x)
@@ -29,8 +30,9 @@ def test_chain_equivalence():
     assert not child.is_root()
     assert parent.is_root()
 
+
 @pytest.fixture(params=[True, False])
-def b(request):
+def test_chainer(request):
     pushup = request.param
     a = MagicChain(push_up=pushup)
     a._create_and_add_child('b1', )
@@ -53,7 +55,7 @@ def b(request):
         assert hasattr(a, 'b3')
         assert hasattr(a, 'c2')
 
-def test_chainer_add_child(b):
+def test_chainer_add_child(test_chainer):
     pass
 
 
@@ -75,6 +77,7 @@ def test_chaining():
     children += [1]
     assert type(children) is MagicList
 
+
 def test_ancestors():
     a = MagicChain(push_up=True)
     a._create_and_add_child('b1', )
@@ -86,6 +89,7 @@ def test_ancestors():
 
     assert len(d1.ancestors(include_self=False)) == 3
     assert len(d1.ancestors(include_self=True)) == 4
+
 
 def test_remove():
     a = MagicChain(push_up=True)
@@ -110,6 +114,7 @@ def test_remove():
     assert c1.root is c1
     assert c1.d1.root is c1
     assert c1.e1.root is c1
+
 
 def test_remove_children():
     a = MagicChain(push_up=True)
@@ -140,6 +145,7 @@ def test_set_raises_attr_error():
     with pytest.raises(AttributeError):
         a.b1 = 4
 
+
 def test_sanitize_attr():
 
     a = MagicChain()
@@ -151,6 +157,7 @@ def test_sanitize_attr():
     a._create_and_add_child(n)
     with pytest.raises(AttributeError):
         a._create_and_add_child(n)
+
 
 def test_dont_sanitize_attr():
 

@@ -231,6 +231,7 @@ class MagicChain(object):
             push_up = self._push_up
         self._validate_attr(attr, push_up)
         self._children[attr] = child
+        child._parent = self
         if push_up:
             if attr not in self.root._children:
                 self.root._grandchildren[attr] = child

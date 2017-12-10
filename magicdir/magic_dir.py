@@ -303,7 +303,6 @@ class MagicDir(MagicPath):
             raise AttributeError("File name \"{}\" already exists. Existing files: {}".format(name,
                   ', '.join(self.files.name)))
         file = MagicFile(name)
-        file._parent = self
         self._add(attr, file, push_up=push_up, make_attr=make_attr)
         return file
 

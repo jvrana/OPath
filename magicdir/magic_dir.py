@@ -330,8 +330,8 @@ class MagicDir(MagicPath):
     def dump(self, filename, mode, data, *args, **kwargs):
         """Dump data to json"""
         utils.makedirs(self.abspath)
-        with self.open(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
-            json.dump(data, f)
+        with self.open(str(Path(self.abspath, filename)), mode) as f:
+            json.dump(data, f, *args, **kwargs)
 
     def load(self, filename, mode, *args, **kwargs):
         """Load data from a json"""

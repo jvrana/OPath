@@ -1,13 +1,16 @@
-from .magicchain import MagicChain, MagicList
-from pathlib import Path
-from copy import deepcopy
-from . import utils
-import os
 import glob
 import json
+import os
+from copy import deepcopy
+from pathlib import Path
+
+from . import utils
+from .magicchain import MagicChain, MagicList
+
 
 class MagicPath(MagicChain):
     """ A generic path """
+
     def __init__(self, name, push_up=True):
         super().__init__(push_up=push_up)
         self.name = name
@@ -250,6 +253,15 @@ class MagicDir(MagicPath):
             if c.name == name:
                 return c
 
+    def _validate_add(self, name, attr, expected_type, blacklisted_names):
+        e = self._get_if_exists(name, attr)
+        if e and issubclass(e.__class__, expected_type):
+            return e
+        if name in blacklisted_names:
+            raise AttributeError(
+                "{} name \"{}\" already exists for {}. Existing dirnames: {}".format(
+                    expected_type.__name__, name, self, ', '.join(blacklisted_names)))
+
     # TODO: exist_ok kwarg
     def add(self, name, attr=None, push_up=True, make_attr=True):
         """
@@ -269,12 +281,9 @@ class MagicDir(MagicPath):
         """
         if attr is None:
             attr = name
-        e = self._get_if_exists(name, attr)
-        if e and issubclass(e.__class__, MagicDir):
-            return e
-        if name in self.children.name:
-            raise AttributeError("Dir name \"{}\" already exists for {}. Existing dirnames: {}".format(name, self,
-                  ', '.join(self.children.name)))
+        existing = self._validate_add(name, attr, MagicDir, self.children.name)
+        if existing:
+            return existing
         return self._create_and_add_child(attr, with_attributes={"name": name}, push_up=push_up, make_attr=make_attr)
 
     def add_file(self, name, attr=None, push_up=True, make_attr=True):
@@ -293,15 +302,11 @@ class MagicDir(MagicPath):
         :return: new directory
         :rtype: MagicDir
         """
-
         if attr is None:
             attr = name
-        e = self._get_if_exists(name, attr)
-        if e and issubclass(e.__class__, MagicFile):
-            return e
-        if name in self.files.name:
-            raise AttributeError("File name \"{}\" already exists. Existing files: {}".format(name,
-                  ', '.join(self.files.name)))
+        existing = self._validate_add(name, attr, MagicFile, self.files.name)
+        if existing:
+            return existing
         file = MagicFile(name)
         self._add(attr, file, push_up=push_up, make_attr=make_attr)
         return file

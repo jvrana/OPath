@@ -20,10 +20,10 @@ def test_chain_equivalence():
     parent = MagicChain()
     assert parent.root == parent
 
-    child = parent._create_and_add_child(('child'))
+    child = parent._create_and_add_child('child')
     assert child.root == parent
 
-    grandchild = child._create_and_add_child(('grandchild'))
+    grandchild = child._create_and_add_child('grandchild')
     assert grandchild.root == parent
 
     assert not grandchild.is_root()
@@ -148,7 +148,7 @@ def test_set_raises_attr_error():
 
 def test_sanitize_attr():
 
-    a = MagicChain()
+    a = MagicChain(make_attr=True)
     with pytest.raises(AttributeError):
         a._create_and_add_child('in')
     with pytest.raises(AttributeError):
@@ -162,7 +162,52 @@ def test_sanitize_attr():
 def test_dont_sanitize_attr():
 
     a = MagicChain()
-    a._create_and_add_child('in', make_attr=False)
+    a._create_and_add_child('somefile.now.', make_attr=False)
+
+
+def test_default_make_attr_True__push_up_True():
+    a = MagicChain(make_attr=True, push_up=True)
+    a._create_and_add_child('b')._create_and_add_child('c')
+    assert hasattr(a, 'b')
+    assert hasattr(a, 'c')
+    assert a.has('b')
+    assert a.has('c')
+    assert a.get('b').has('c')
+
+
+def test_default_make_attr_False__push_up_True():
+    a = MagicChain(make_attr=False, push_up=True)
+    bname = 'file.txt'
+    cname = 'file2.txt'
+    a._create_and_add_child(bname)._create_and_add_child(cname)
+    assert hasattr(a, bname)
+    assert hasattr(a, cname)
+    assert a.has(bname)
+    assert a.has(cname)
+    assert a.get(bname).has(cname)
+
+
+def test_default_make_attr_False__push_up_False():
+    a = MagicChain(make_attr=False, push_up=False)
+    bname = 'file.txt'
+    cname = 'file2.txt'
+    a._create_and_add_child(bname)._create_and_add_child(cname)
+    assert hasattr(a, bname)
+    assert not hasattr(a, cname)
+    assert a.has(bname)
+    assert not a.has(cname)
+    assert a.get(bname).has(cname)
+
+
+def test_default_make_attr_True__push_up_False():
+    a = MagicChain(make_attr=True, push_up=False)
+    a._create_and_add_child('b')._create_and_add_child('c')
+    assert hasattr(a, 'b')
+    assert not hasattr(a, 'c')
+    assert a.has('b')
+    assert not a.has('c')
+    assert a.get('b').has('c')
+
 # def test_attributes():
 #     a = Chainer(push_up=True)
 #     a._create_child('b1', )

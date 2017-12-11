@@ -322,21 +322,21 @@ class MagicDir(MagicPath):
         self._add(attr, file, push_up=push_up, check_attr=check_attr)
         return file
 
-    def write_file(self, filename, mode, data, *args, **kwargs):
+    def write_file(self, filename, mode, data, **kwargs):
         """ Write  a file at this location """
         utils.makedirs(self.abspath)
-        with self.open_file(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
+        with self.open_file(str(Path(self.abspath, filename)), mode, **kwargs) as f:
             f.write(data)
 
-    def read_file(self, filename, mode, *args, **kwargs):
+    def read_file(self, filename, mode, **kwargs):
         """ Read a file at this location """
-        with self.open_file(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
+        with self.open_file(str(Path(self.abspath, filename)), mode, **kwargs) as f:
             return f.read()
 
-    def open_file(self, filename, mode, *args, **kwargs):
+    def open_file(self, filename, mode, **kwargs):
         """ Open a file at this location """
         utils.makedirs(self.abspath)
-        return utils.fopen(str(Path(self.abspath, filename)), mode, *args, **kwargs)
+        return utils.fopen(str(Path(self.abspath, filename)), mode, **kwargs)
 
     def dump_json(self, filename, mode, data, *args, **json_kwargs):
         """Dump data to json"""
@@ -344,7 +344,7 @@ class MagicDir(MagicPath):
         with self.open_file(str(Path(self.abspath, filename)), mode) as f:
             json.dump(data, f, *args, **json_kwargs)
 
-    def load_json(self, filename, mode, *args, **kwargs):
+    def load_json(self, filename, mode, **kwargs):
         """Load data from a json"""
-        with self.open_file(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
+        with self.open_file(str(Path(self.abspath, filename)), mode, **kwargs) as f:
             return json.load(f)

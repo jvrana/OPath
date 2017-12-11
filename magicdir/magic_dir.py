@@ -11,8 +11,19 @@ from .magicchain import MagicChain, MagicList
 class MagicPath(MagicChain):
     """ A generic path """
 
-    def __init__(self, name, push_up=True):
-        super().__init__(push_up=push_up)
+    def __init__(self, name, push_up=True, check_attr=True):
+        """
+        Initializer for MagicPath
+
+        :param name: basename of the path
+        :type name: str
+        :param push_up: default of whether to 'push' access of this path to the root path node
+        :type push_up: boolean
+        :param check_attr: default to validate attributes. For example 'this is not valid' is not a valid
+                            attribute since it contains spaces but 'this_is_a_valid_attribute' is a valid attribute.
+        :type check_attr: boolean
+        """
+        super().__init__(push_up=push_up, check_attr=check_attr)
         self.name = name
         self._parent_dir = ''
 
@@ -263,7 +274,7 @@ class MagicDir(MagicPath):
                     expected_type.__name__, name, self, ', '.join(blacklisted_names)))
 
     # TODO: exist_ok kwarg
-    def add(self, name, attr=None, push_up=None):
+    def add(self, name, attr=None, push_up=None, check_attr=None):
         """
         Adds a new directory to the directory tree.
 
@@ -273,6 +284,9 @@ class MagicDir(MagicPath):
         :type attr: basestring
         :param push_up: whether to 'push' attribute to the root, where it can be accessed
         :type push_up: boolean
+        :param check_attr: if True, will raise exception if attr is not a valid attribute. If None, value will
+        default to defaults defined on initialization
+        :type check_attr: boolean|None
         :return: new directory
         :rtype: MagicDir
         """
@@ -281,9 +295,9 @@ class MagicDir(MagicPath):
         existing = self._validate_add(name, attr, MagicDir, self.children.name)
         if existing:
             return existing
-        return self._create_and_add_child(attr, with_attributes={"name": name}, push_up=push_up)
+        return self._create_and_add_child(attr, with_attributes={"name": name}, push_up=push_up, check_attr=check_attr)
 
-    def add_file(self, name, attr=None, push_up=None):
+    def add_file(self, name, attr=None, push_up=None, check_attr=False):
         """
         Adds a new file to the directory tree.
 
@@ -293,6 +307,9 @@ class MagicDir(MagicPath):
         :type attr: basestring
         :param push_up: whether to 'push' attribute to the root, where it can be accessed
         :type push_up: boolean
+        :param check_attr: if True, will raise exception if attr is not a valid attribute. If None, value will
+        default to defaults defined on initialization
+        :type check_attr: boolean|None
         :return: new directory
         :rtype: MagicDir
         """
@@ -302,7 +319,7 @@ class MagicDir(MagicPath):
         if existing:
             return existing
         file = MagicFile(name)
-        self._add(attr, file, push_up=push_up)
+        self._add(attr, file, push_up=push_up, check_attr=check_attr)
         return file
 
     def write(self, filename, mode, data, *args, **kwargs):

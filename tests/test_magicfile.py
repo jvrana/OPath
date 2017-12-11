@@ -57,7 +57,7 @@ def test_open(file_env):
     data = str(uuid.uuid4())
     file_env.testtxt.write('w', data)
 
-    assert file_env.A1.read('test.txt', 'r') == data
+    assert file_env.A1.read_file('test.txt', 'r') == data
     assert file_env.testtxt.open('r').read() == data
     assert file_env.testtxt.read('r') == data
 

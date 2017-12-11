@@ -102,23 +102,23 @@ class MagicFile(MagicPath):
 
     def write(self, mode, data, *args, **kwargs):
         """ Write data to a file """
-        return self.parent.write(self.name, mode, data, *args, **kwargs)
+        return self.parent.write_file(self.name, mode, data, *args, **kwargs)
 
     def read(self, mode, *args, **kwargs):
         """ Read data from a file """
-        return self.parent.read(self.name, mode, *args, **kwargs)
+        return self.parent.read_file(self.name, mode, *args, **kwargs)
 
     def open(self, mode, *args, **kwargs):
         """ Opens a file for reading or writing """
-        return self.parent.open(self.name, mode, *args, **kwargs)
+        return self.parent.open_file(self.name, mode, *args, **kwargs)
 
     def dump(self, data, mode='w', **kwargs):
         """Dump data as a json"""
-        return self.parent.dump(self.name, mode, data, **kwargs)
+        return self.parent.dump_json(self.name, mode, data, **kwargs)
 
     def load(self, mode='r', **kwargs):
         """Load data from json"""
-        return self.parent.load(self.name, mode, **kwargs)
+        return self.parent.load_json(self.name, mode, **kwargs)
 
     def exists(self):
         """ Whether the file exists """
@@ -322,29 +322,29 @@ class MagicDir(MagicPath):
         self._add(attr, file, push_up=push_up, check_attr=check_attr)
         return file
 
-    def write(self, filename, mode, data, *args, **kwargs):
+    def write_file(self, filename, mode, data, *args, **kwargs):
         """ Write  a file at this location """
         utils.makedirs(self.abspath)
-        with self.open(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
+        with self.open_file(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
             f.write(data)
 
-    def read(self, filename, mode, *args, **kwargs):
+    def read_file(self, filename, mode, *args, **kwargs):
         """ Read a file at this location """
-        with self.open(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
+        with self.open_file(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
             return f.read()
 
-    def open(self, filename, mode, *args, **kwargs):
+    def open_file(self, filename, mode, *args, **kwargs):
         """ Open a file at this location """
         utils.makedirs(self.abspath)
         return utils.fopen(str(Path(self.abspath, filename)), mode, *args, **kwargs)
 
-    def dump(self, filename, mode, data, *args, **kwargs):
+    def dump_json(self, filename, mode, data, *args, **kwargs):
         """Dump data to json"""
         utils.makedirs(self.abspath)
-        with self.open(str(Path(self.abspath, filename)), mode) as f:
+        with self.open_file(str(Path(self.abspath, filename)), mode) as f:
             json.dump(data, f, *args, **kwargs)
 
-    def load(self, filename, mode, *args, **kwargs):
+    def load_json(self, filename, mode, *args, **kwargs):
         """Load data from a json"""
-        with self.open(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
+        with self.open_file(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
             return json.load(f)

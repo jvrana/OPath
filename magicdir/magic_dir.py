@@ -100,25 +100,25 @@ class MagicPath(MagicChain):
 class MagicFile(MagicPath):
     """ A file object """
 
-    def write(self, data, mode, *args, **kwargs):
+    def write(self, data, mode='w', **kwargs):
         """ Write data to a file """
-        return self.parent.write_file(self.name, mode, data, *args, **kwargs)
+        return self.parent.write_file(self.name, mode, data, **kwargs)
 
-    def read(self, mode, *args, **kwargs):
+    def read(self, mode='r', **kwargs):
         """ Read data from a file """
-        return self.parent.read_file(self.name, mode, *args, **kwargs)
+        return self.parent.read_file(self.name, mode, **kwargs)
 
-    def open(self, mode, *args, **kwargs):
+    def open(self, mode='r', **kwargs):
         """ Opens a file for reading or writing """
-        return self.parent.open_file(self.name, mode, *args, **kwargs)
+        return self.parent.open_file(self.name, mode, **kwargs)
 
-    def dump(self, data, mode='w', **kwargs):
+    def dump(self, data, mode='w', **json_kwargs):
         """Dump data as a json"""
-        return self.parent.dump_json(self.name, mode, data, **kwargs)
+        return self.parent.dump_json(self.name, mode, data, **json_kwargs)
 
-    def load(self, mode='r', **kwargs):
+    def load(self, mode='r', **json_kwargs):
         """Load data from json"""
-        return self.parent.load_json(self.name, mode, **kwargs)
+        return self.parent.load_json(self.name, mode, **json_kwargs)
 
     def exists(self):
         """ Whether the file exists """
@@ -338,11 +338,11 @@ class MagicDir(MagicPath):
         utils.makedirs(self.abspath)
         return utils.fopen(str(Path(self.abspath, filename)), mode, *args, **kwargs)
 
-    def dump_json(self, filename, mode, data, *args, **kwargs):
+    def dump_json(self, filename, mode, data, *args, **json_kwargs):
         """Dump data to json"""
         utils.makedirs(self.abspath)
         with self.open_file(str(Path(self.abspath, filename)), mode) as f:
-            json.dump(data, f, *args, **kwargs)
+            json.dump(data, f, *args, **json_kwargs)
 
     def load_json(self, filename, mode, *args, **kwargs):
         """Load data from a json"""

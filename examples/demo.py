@@ -11,5 +11,5 @@ assert t.abspath == env.test.abspath
 
 env.print()
 # wait 1
-env.test.write('test.txt', 'w', 'Wow! This was easy!')
+env.test.write('w', 'test.txt', 'Wow! This was easy!')
 

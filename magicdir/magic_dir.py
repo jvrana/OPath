@@ -100,7 +100,7 @@ class MagicPath(MagicChain):
 class MagicFile(MagicPath):
     """ A file object """
 
-    def write(self, mode, data, *args, **kwargs):
+    def write(self, data, mode, *args, **kwargs):
         """ Write data to a file """
         return self.parent.write_file(self.name, mode, data, *args, **kwargs)
 

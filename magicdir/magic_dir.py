@@ -11,8 +11,8 @@ from .magicchain import MagicChain, MagicList
 class MagicPath(MagicChain):
     """ A generic path """
 
-    def __init__(self, name, push_up=True):
-        super().__init__(push_up=push_up)
+    def __init__(self, name, push_up=True, make_attr=True):
+        super().__init__(push_up=push_up, make_attr=make_attr)
         self.name = name
         self._parent_dir = ''
 
@@ -263,7 +263,7 @@ class MagicDir(MagicPath):
                     expected_type.__name__, name, self, ', '.join(blacklisted_names)))
 
     # TODO: exist_ok kwarg
-    def add(self, name, attr=None, push_up=True, make_attr=True):
+    def add(self, name, attr=None, push_up=None, make_attr=None):
         """
         Adds a new directory to the directory tree.
 
@@ -286,7 +286,7 @@ class MagicDir(MagicPath):
             return existing
         return self._create_and_add_child(attr, with_attributes={"name": name}, push_up=push_up, make_attr=make_attr)
 
-    def add_file(self, name, attr=None, push_up=True, make_attr=True):
+    def add_file(self, name, attr=None, push_up=None, make_attr=None):
         """
         Adds a new file to the directory tree.
 

@@ -51,23 +51,38 @@ class MagicChain(object):
     New nodes can be 'pushed_up'
     """
 
-    def __init__(self, push_up=None):
+    def __init__(self, push_up=None, make_attr=None):
         """
         Chainer constructor
 
         :param parent: parent node that called this object
         :type parent: MagicChain
-        :param push_up: whether to push up attributes to the root node
+        :param push_up: whether to push up node to the root node by default
         :type push_up: boolean
+        :param make_attr: whether to make nodes accessible by attribute
+        :type make_attr: boolean
         """
         self._parent = None
         self._children = {}
         self._grandchildren = {}
         self._push_up = False
+        self._make_attr = False
+
         if push_up is not None:
             self._push_up = push_up
+        if make_attr is not None:
+            self._make_attr = make_attr
 
     # TODO: add dynamic attr that looks at parent? It would be really slow...
+
+    def _opts(self, **opts):
+        """Returns the options dictionary. If passed opts has a None value,
+        default option is used."""
+        default_opts = dict(push_up=self._push_up, make_attr=self._make_attr)
+        opts = dict(opts)  # copy dictionary
+        for key, value in opts.items():
+            default_opts.update({} if value is None else {key: value})
+        return default_opts
 
     @property
     def attr(self):
@@ -151,14 +166,15 @@ class MagicChain(object):
     #     # other.remove()
     #     # self._add_child(other, push_up=push_up)
 
-    def remove_parent(self):
+    def remove_parent(self, push_up=None):
         """Remove this node's parent, effectively breaking the chain"""
+        opts = self._opts(push_up=push_up)
         if self.parent is not None:
             parent = self.parent
             rm = parent._remove_child(self.attr)
             rm._parent = None
-            parent._update_grandchildren()
-            rm._update_grandchildren()
+            parent._update_grandchildren(opts['push_up'])
+            rm._update_grandchildren(opts['push_up'])
             return rm
 
     def _sanitize_identifier(self, iden):
@@ -182,11 +198,10 @@ class MagicChain(object):
         :return: None
         :rtype: None
         """
-        if push_up is None:
-            push_up = self._push_up
+        opts = self._opts(push_up=push_up)
         if hasattr(self, attr):
             raise AttributeError("Attribute \"{}\" already exists".format(attr))
-        if push_up:
+        if opts['push_up']:
             if hasattr(self.root, attr):
                 raise AttributeError("Cannot push up attr \"{}\". Attribute already exists".format(attr))
 
@@ -208,7 +223,7 @@ class MagicChain(object):
     #     if child.attr in self.root._grandchildren:
     #         raise AttributeError("Cannot push attr {} to root. Try using a unique attr.".format(child.attr))
 
-    def _add(self, attr, child, push_up=None, make_attr=True):
+    def _add(self, attr, child, push_up=None, make_attr=None):
         """
         Adds child node to this node.
 
@@ -225,14 +240,13 @@ class MagicChain(object):
         :return: the child node
         :rtype: MagicChain
         """
-        if make_attr:
+        opts = self._opts(push_up=push_up, make_attr=make_attr)
+        if opts['make_attr']:
             self._sanitize_identifier(attr)
-        if push_up is None:
-            push_up = self._push_up
-        self._validate_attr(attr, push_up)
+        self._validate_attr(attr, opts['push_up'])
         self._children[attr] = child
         child._parent = self
-        if push_up:
+        if opts['push_up']:
             if attr not in self.root._children:
                 self.root._grandchildren[attr] = child
         return child
@@ -256,7 +270,7 @@ class MagicChain(object):
             setattr(c, k, v)
         return c
 
-    def _create_and_add_child(self, attr, with_attributes=None, push_up=None, make_attr=True):
+    def _create_and_add_child(self, attr, with_attributes=None, push_up=None, make_attr=None):
         """
         Copy this node and adds the node as a child
 
@@ -271,10 +285,9 @@ class MagicChain(object):
         :return: the newly added child node
         :rtype: MagicChain
         """
-        if push_up is None:
-            push_up = self._push_up
+        opts = self._opts(push_up=push_up, make_attr=make_attr)
         child = self._create_child(with_attributes)
-        return self._add(attr, child, push_up=push_up, make_attr=make_attr)
+        return self._add(attr, child, **opts)
 
     def _remove_child(self, attr):
         """
@@ -289,20 +302,14 @@ class MagicChain(object):
             return self._children.pop(attr)
 
     # TODO: push_up is never really used
-    def _update_grandchildren(self, push_up=None):
+    def _update_grandchildren(self, push_up):
         """ Updates accessible children """
-        if push_up is None:
-            push_up = self._push_up
         if push_up:
             self.root._grandchildren = {}
             for c in self.children:
                 d = c.descendents(include_self=False)
                 for gc in d:
                     self._add_grandchild(gc)
-
-    def _attributes(self):
-        """List of all attributes accessible"""
-        return list(self._children.keys()) + list(self._grandchildren.keys())
 
     def _add_grandchild(self, child):
         """Adds a node to the roots grandchildren"""

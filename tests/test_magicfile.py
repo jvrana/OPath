@@ -35,7 +35,7 @@ def test_file_write_remove(file_env):
     file_env.mkdirs()
     assert not file_env.testtxt.abspath.is_file()
     assert not file_env.testtxt.abspath.is_dir()
-    file_env.testtxt.write('w', 'data')
+    file_env.testtxt.write('data', 'w')
     assert file_env.testtxt.abspath.is_file()
 
     file_env.testtxt.rm()
@@ -55,9 +55,9 @@ def test_open(file_env):
 
     file_env.mkdirs()
     data = str(uuid.uuid4())
-    file_env.testtxt.write('w', data)
+    file_env.testtxt.write(data, 'w')
 
-    assert file_env.A1.read('test.txt', 'r') == data
+    assert file_env.A1.read_file('test.txt', 'r') == data
     assert file_env.testtxt.open('r').read() == data
     assert file_env.testtxt.read('r') == data
 
@@ -67,7 +67,7 @@ def test_raise_filename_error(file_env):
     file_env.mkdirs()
 
     data = str(uuid.uuid4())
-    file_env.testtxt.write('w', data)
+    file_env.testtxt.write(data, 'w')
 
     with pytest.raises(AttributeError):
         file_env.A1.add_file(file_env.testtxt.name)
@@ -96,7 +96,7 @@ def test_dynamic_file_creation(file_env):
     file_env.mkdirs()
 
     data = str(uuid.uuid4())
-    file_env.A2.add_file("new_file.txt", attr="file").write('w', data)
+    file_env.A2.add_file("new_file.txt", attr="file").write(data, 'w')
     assert file_env.file.read('r') == data
 
 
@@ -106,5 +106,5 @@ def test_write_file_exists(file_env):
     file_env.mkdirs()
 
     data = str(uuid.uuid4())
-    file_env.A2.add_file("new_file.txt", attr="file").write('w', data)
+    file_env.A2.add_file("new_file.txt", attr="file").write(data, 'w')
     assert file_env.file.read('r') == data

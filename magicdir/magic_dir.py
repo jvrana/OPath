@@ -11,8 +11,19 @@ from .magicchain import MagicChain, MagicList
 class MagicPath(MagicChain):
     """ A generic path """
 
-    def __init__(self, name, push_up=True, make_attr=True):
-        super().__init__(push_up=push_up, make_attr=make_attr)
+    def __init__(self, name, push_up=True, check_attr=True):
+        """
+        Initializer for MagicPath
+
+        :param name: basename of the path
+        :type name: str
+        :param push_up: default of whether to 'push' access of this path to the root path node
+        :type push_up: boolean
+        :param check_attr: default to validate attributes. For example 'this is not valid' is not a valid
+                            attribute since it contains spaces but 'this_is_a_valid_attribute' is a valid attribute.
+        :type check_attr: boolean
+        """
+        super().__init__(push_up=push_up, check_attr=check_attr)
         self.name = name
         self._parent_dir = ''
 
@@ -89,25 +100,25 @@ class MagicPath(MagicChain):
 class MagicFile(MagicPath):
     """ A file object """
 
-    def write(self, mode, data, *args, **kwargs):
+    def write(self, data, mode='w', **kwargs):
         """ Write data to a file """
-        return self.parent.write(self.name, mode, data, *args, **kwargs)
+        return self.parent.write_file(self.name, mode, data, **kwargs)
 
-    def read(self, mode, *args, **kwargs):
+    def read(self, mode='r', **kwargs):
         """ Read data from a file """
-        return self.parent.read(self.name, mode, *args, **kwargs)
+        return self.parent.read_file(self.name, mode, **kwargs)
 
-    def open(self, mode, *args, **kwargs):
+    def open(self, mode='r', **kwargs):
         """ Opens a file for reading or writing """
-        return self.parent.open(self.name, mode, *args, **kwargs)
+        return self.parent.open_file(self.name, mode, **kwargs)
 
-    def dump(self, data, mode='w', **kwargs):
+    def dump(self, data, mode='w', **json_kwargs):
         """Dump data as a json"""
-        return self.parent.dump(self.name, mode, data, **kwargs)
+        return self.parent.dump_json(self.name, mode, data, **json_kwargs)
 
-    def load(self, mode='r', **kwargs):
+    def load(self, mode='r', **json_kwargs):
         """Load data from json"""
-        return self.parent.load(self.name, mode, **kwargs)
+        return self.parent.load_json(self.name, mode, **json_kwargs)
 
     def exists(self):
         """ Whether the file exists """
@@ -263,7 +274,7 @@ class MagicDir(MagicPath):
                     expected_type.__name__, name, self, ', '.join(blacklisted_names)))
 
     # TODO: exist_ok kwarg
-    def add(self, name, attr=None, push_up=None, make_attr=None):
+    def add(self, name, attr=None, push_up=None, check_attr=None):
         """
         Adds a new directory to the directory tree.
 
@@ -273,9 +284,9 @@ class MagicDir(MagicPath):
         :type attr: basestring
         :param push_up: whether to 'push' attribute to the root, where it can be accessed
         :type push_up: boolean
-        :param make_attr: whether to sanitize attribute to access (e.g. '.secrets' and 'with' are not a valid
-        attributes)
-        :type make_attr:
+        :param check_attr: if True, will raise exception if attr is not a valid attribute. If None, value will
+        default to defaults defined on initialization
+        :type check_attr: boolean|None
         :return: new directory
         :rtype: MagicDir
         """
@@ -284,9 +295,9 @@ class MagicDir(MagicPath):
         existing = self._validate_add(name, attr, MagicDir, self.children.name)
         if existing:
             return existing
-        return self._create_and_add_child(attr, with_attributes={"name": name}, push_up=push_up, make_attr=make_attr)
+        return self._create_and_add_child(attr, with_attributes={"name": name}, push_up=push_up, check_attr=check_attr)
 
-    def add_file(self, name, attr=None, push_up=None, make_attr=None):
+    def add_file(self, name, attr=None, push_up=None, check_attr=False):
         """
         Adds a new file to the directory tree.
 
@@ -296,9 +307,9 @@ class MagicDir(MagicPath):
         :type attr: basestring
         :param push_up: whether to 'push' attribute to the root, where it can be accessed
         :type push_up: boolean
-        :param make_attr: whether to sanitize attribute to access (e.g. '.secrets' and 'with' are not a valid
-        attributes)
-        :type make_attr:
+        :param check_attr: if True, will raise exception if attr is not a valid attribute. If None, value will
+        default to defaults defined on initialization
+        :type check_attr: boolean|None
         :return: new directory
         :rtype: MagicDir
         """
@@ -308,32 +319,32 @@ class MagicDir(MagicPath):
         if existing:
             return existing
         file = MagicFile(name)
-        self._add(attr, file, push_up=push_up, make_attr=make_attr)
+        self._add(attr, file, push_up=push_up, check_attr=check_attr)
         return file
 
-    def write(self, filename, mode, data, *args, **kwargs):
+    def write_file(self, filename, mode, data, **kwargs):
         """ Write  a file at this location """
         utils.makedirs(self.abspath)
-        with self.open(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
+        with self.open_file(str(Path(self.abspath, filename)), mode, **kwargs) as f:
             f.write(data)
 
-    def read(self, filename, mode, *args, **kwargs):
+    def read_file(self, filename, mode, **kwargs):
         """ Read a file at this location """
-        with self.open(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
+        with self.open_file(str(Path(self.abspath, filename)), mode, **kwargs) as f:
             return f.read()
 
-    def open(self, filename, mode, *args, **kwargs):
+    def open_file(self, filename, mode, **kwargs):
         """ Open a file at this location """
         utils.makedirs(self.abspath)
-        return utils.fopen(str(Path(self.abspath, filename)), mode, *args, **kwargs)
+        return utils.fopen(str(Path(self.abspath, filename)), mode, **kwargs)
 
-    def dump(self, filename, mode, data, *args, **kwargs):
+    def dump_json(self, filename, mode, data, *args, **json_kwargs):
         """Dump data to json"""
         utils.makedirs(self.abspath)
-        with self.open(str(Path(self.abspath, filename)), mode) as f:
-            json.dump(data, f, *args, **kwargs)
+        with self.open_file(str(Path(self.abspath, filename)), mode) as f:
+            json.dump(data, f, *args, **json_kwargs)
 
-    def load(self, filename, mode, *args, **kwargs):
+    def load_json(self, filename, mode, **kwargs):
         """Load data from a json"""
-        with self.open(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
+        with self.open_file(str(Path(self.abspath, filename)), mode, **kwargs) as f:
             return json.load(f)

@@ -51,7 +51,7 @@ class MagicChain(object):
     New nodes can be 'pushed_up'
     """
 
-    def __init__(self, push_up=None, make_attr=None):
+    def __init__(self, push_up=False, check_attr=True):
         """
         Chainer constructor
 
@@ -59,30 +59,25 @@ class MagicChain(object):
         :type parent: MagicChain
         :param push_up: whether to push up node to the root node by default
         :type push_up: boolean
-        :param make_attr: whether to make nodes accessible by attribute
-        :type make_attr: boolean
         """
         self._parent = None
         self._children = {}
         self._grandchildren = {}
-        self._push_up = False
-        self._make_attr = False
 
-        if push_up is not None:
-            self._push_up = push_up
-        if make_attr is not None:
-            self._make_attr = make_attr
+        self._defaults = dict(
+            push_up=push_up,
+            check_attr=check_attr
+        )
 
     # TODO: add dynamic attr that looks at parent? It would be really slow...
 
     def _opts(self, **opts):
         """Returns the options dictionary. If passed opts has a None value,
         default option is used."""
-        default_opts = dict(push_up=self._push_up, make_attr=self._make_attr)
-        opts = dict(opts)  # copy dictionary
+        myopts = dict(self._defaults)
         for key, value in opts.items():
-            default_opts.update({} if value is None else {key: value})
-        return default_opts
+            myopts.update({} if value is None else {key: value})
+        return myopts
 
     @property
     def attr(self):
@@ -223,7 +218,7 @@ class MagicChain(object):
     #     if child.attr in self.root._grandchildren:
     #         raise AttributeError("Cannot push attr {} to root. Try using a unique attr.".format(child.attr))
 
-    def _add(self, attr, child, push_up=None, make_attr=None):
+    def _add(self, attr, child, push_up=None, check_attr=None):
         """
         Adds child node to this node.
 
@@ -234,14 +229,14 @@ class MagicChain(object):
         :param push_up: whether to add the child node to the root node. If True, the
         child will be able to be accessed from the root node.
         :type push_up: boolean
-        :param make_attr: whether to give access to this node via attribute format. For
-        example, with attr='mynode', parent.mynode would give access to the child node
-        :type make_attr: boolean
+        :param check_attr: if True, will raise exception if attr is not a valid attribute. If None, value will
+        default to defaults defined on initialization
+        :type check_attr: boolean|None
         :return: the child node
         :rtype: MagicChain
         """
-        opts = self._opts(push_up=push_up, make_attr=make_attr)
-        if opts['make_attr']:
+        opts = self._opts(push_up=push_up, check_attr=check_attr)
+        if opts['check_attr']:
             self._sanitize_identifier(attr)
         self._validate_attr(attr, opts['push_up'])
         self._children[attr] = child
@@ -270,7 +265,7 @@ class MagicChain(object):
             setattr(c, k, v)
         return c
 
-    def _create_and_add_child(self, attr, with_attributes=None, push_up=None, make_attr=None):
+    def _create_and_add_child(self, attr, with_attributes=None, push_up=None, check_attr=None):
         """
         Copy this node and adds the node as a child
 
@@ -280,14 +275,14 @@ class MagicChain(object):
         :type with_attributes: dict
         :param push_up: whether to push the new node to root.
         :type push_up: boolean
-        :param make_attr: whether to give parent nodes access to this node via an attribute
-        :type make_attr: boolean
+        :param check_attr: if True, will raise exception if attr is not a valid attribute. If None, value will
+        default to defaults defined on initialization
+        :type check_attr: boolean|None
         :return: the newly added child node
         :rtype: MagicChain
         """
-        opts = self._opts(push_up=push_up, make_attr=make_attr)
         child = self._create_child(with_attributes)
-        return self._add(attr, child, **opts)
+        return self._add(attr, child, push_up, check_attr)
 
     def _remove_child(self, attr):
         """

@@ -35,6 +35,7 @@ def magiclist(fxn):
     return magiclist_wrapper
 
 
+# TODO: Could implement this as a MutableMapping, oh well...
 class MagicChain(object):
     """
     A tree-like class for chaining commands and attributes together with special

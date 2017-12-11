@@ -11,8 +11,8 @@ from .magicchain import MagicChain, MagicList
 class MagicPath(MagicChain):
     """ A generic path """
 
-    def __init__(self, name, push_up=True, make_attr=True):
-        super().__init__(push_up=push_up, make_attr=make_attr)
+    def __init__(self, name, push_up=True):
+        super().__init__(push_up=push_up)
         self.name = name
         self._parent_dir = ''
 
@@ -263,7 +263,7 @@ class MagicDir(MagicPath):
                     expected_type.__name__, name, self, ', '.join(blacklisted_names)))
 
     # TODO: exist_ok kwarg
-    def add(self, name, attr=None, push_up=None, make_attr=None):
+    def add(self, name, attr=None, push_up=None):
         """
         Adds a new directory to the directory tree.
 
@@ -273,9 +273,6 @@ class MagicDir(MagicPath):
         :type attr: basestring
         :param push_up: whether to 'push' attribute to the root, where it can be accessed
         :type push_up: boolean
-        :param make_attr: whether to sanitize attribute to access (e.g. '.secrets' and 'with' are not a valid
-        attributes)
-        :type make_attr:
         :return: new directory
         :rtype: MagicDir
         """
@@ -284,9 +281,9 @@ class MagicDir(MagicPath):
         existing = self._validate_add(name, attr, MagicDir, self.children.name)
         if existing:
             return existing
-        return self._create_and_add_child(attr, with_attributes={"name": name}, push_up=push_up, make_attr=make_attr)
+        return self._create_and_add_child(attr, with_attributes={"name": name}, push_up=push_up)
 
-    def add_file(self, name, attr=None, push_up=None, make_attr=None):
+    def add_file(self, name, attr=None, push_up=None):
         """
         Adds a new file to the directory tree.
 
@@ -296,9 +293,6 @@ class MagicDir(MagicPath):
         :type attr: basestring
         :param push_up: whether to 'push' attribute to the root, where it can be accessed
         :type push_up: boolean
-        :param make_attr: whether to sanitize attribute to access (e.g. '.secrets' and 'with' are not a valid
-        attributes)
-        :type make_attr:
         :return: new directory
         :rtype: MagicDir
         """
@@ -308,7 +302,7 @@ class MagicDir(MagicPath):
         if existing:
             return existing
         file = MagicFile(name)
-        self._add(attr, file, push_up=push_up, make_attr=make_attr)
+        self._add(attr, file, push_up=push_up)
         return file
 
     def write(self, filename, mode, data, *args, **kwargs):

@@ -148,7 +148,7 @@ def test_set_raises_attr_error():
 
 def test_sanitize_attr():
 
-    a = MagicChain(make_attr=True)
+    a = MagicChain()
     with pytest.raises(AttributeError):
         a._create_and_add_child('in')
     with pytest.raises(AttributeError):
@@ -159,14 +159,8 @@ def test_sanitize_attr():
         a._create_and_add_child(n)
 
 
-def test_dont_sanitize_attr():
-
-    a = MagicChain()
-    a._create_and_add_child('somefile.now.', make_attr=False)
-
-
-def test_default_make_attr_True__push_up_True():
-    a = MagicChain(make_attr=True, push_up=True)
+def test_default_push_up_True():
+    a = MagicChain(push_up=True)
     a._create_and_add_child('b')._create_and_add_child('c')
     assert hasattr(a, 'b')
     assert hasattr(a, 'c')
@@ -175,49 +169,11 @@ def test_default_make_attr_True__push_up_True():
     assert a.get('b').has('c')
 
 
-def test_default_make_attr_False__push_up_True():
-    a = MagicChain(make_attr=False, push_up=True)
-    bname = 'file.txt'
-    cname = 'file2.txt'
-    a._create_and_add_child(bname)._create_and_add_child(cname)
-    assert hasattr(a, bname)
-    assert hasattr(a, cname)
-    assert a.has(bname)
-    assert a.has(cname)
-    assert a.get(bname).has(cname)
-
-
-def test_default_make_attr_False__push_up_False():
-    a = MagicChain(make_attr=False, push_up=False)
-    bname = 'file.txt'
-    cname = 'file2.txt'
-    a._create_and_add_child(bname)._create_and_add_child(cname)
-    assert hasattr(a, bname)
-    assert not hasattr(a, cname)
-    assert a.has(bname)
-    assert not a.has(cname)
-    assert a.get(bname).has(cname)
-
-
-def test_default_make_attr_True__push_up_False():
-    a = MagicChain(make_attr=True, push_up=False)
+def test_default_push_up_False():
+    a = MagicChain(push_up=False)
     a._create_and_add_child('b')._create_and_add_child('c')
     assert hasattr(a, 'b')
     assert not hasattr(a, 'c')
     assert a.has('b')
     assert not a.has('c')
     assert a.get('b').has('c')
-
-# def test_attributes():
-#     a = Chainer(push_up=True)
-#     a._create_child('b1', )
-#     a._create_child('b2')
-#     a.b1._create_child('c1', )
-#     d1 = a.c1._create_child('d1', )
-#
-#     assert set(d1.ancestor_attrs('alias')) == set(['b1', 'c1', None])
-#     assert set(a.descendent_attrs('alias')) == set(['b1', 'b2', 'c1', 'd1'])
-#     assert set(a.b1.descendent_attrs('alias')) == set(['c1', 'd1'])
-
-
-

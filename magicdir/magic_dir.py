@@ -247,7 +247,7 @@ class MagicDir(MagicPath):
     def _get_if_exists(self, name, attr):
         if self.has(attr):
             c = self.get(attr)
-            if c.name == name:
+            if hasattr(c, 'name') and c.name == name:
                 return c
 
     # TODO: exist_ok kwarg

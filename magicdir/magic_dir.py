@@ -142,7 +142,7 @@ class MagicDir(MagicPath):
         :rtype: list
         """
         desc = self.descendents(include_self=True)
-        return MagicList([d for d in desc if d.__class__ is MagicFile])
+        return MagicList([d for d in desc if isinstance(d, MagicFile)])
 
     @property
     def dirs(self):
@@ -153,7 +153,7 @@ class MagicDir(MagicPath):
         :rtype: list
         """
         desc = self.descendents(include_self=True)
-        return MagicList([d for d in desc if d.__class__ is self.__class__])
+        return MagicList([d for d in desc if isinstance(d, MagicDir)])
 
     @property
     def relpaths(self):

@@ -112,11 +112,11 @@ class MagicFile(MagicPath):
         """ Opens a file for reading or writing """
         return self.parent.open_file(self.name, mode, **kwargs)
 
-    def dump(self, data, mode='w', **json_kwargs):
+    def dump_json(self, data, mode='w', **json_kwargs):
         """Dump data as a json"""
         return self.parent.dump_json(self.name, mode, data, **json_kwargs)
 
-    def load(self, mode='r', **json_kwargs):
+    def load_json(self, mode='r', **json_kwargs):
         """Load data from json"""
         return self.parent.load_json(self.name, mode, **json_kwargs)
 

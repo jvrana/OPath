@@ -155,3 +155,34 @@ def test_chained():
     env = MagicDir('bin')
     env.add('A1').add('B1')
     env.add('C1').add("D1")
+
+
+def test_list_dirs():
+
+    env = MagicDir('bin')
+    env.add('A1').add('B1')
+    env.add('C1').add("D1")
+
+    dirs = env.list_dirs()
+    assert env.A1 in dirs
+    assert env.C1 in dirs
+    assert not env.B1 in dirs
+    assert not env.D1 in dirs
+
+
+def test_list_files():
+
+    env = MagicDir('bin')
+    env.add('A1').add_file('afile')
+    env.add('C1').add_file("dfile")
+    env.add_file('efile')
+    env.add_file('ffile')
+
+    files = env.list_files()
+    assert not env.A1 in files
+    assert not env.afile in files
+    assert not env.C1 in files
+    assert not env.dfile in files
+
+    assert env.efile in files
+    assert env.ffile in files

@@ -155,6 +155,14 @@ class MagicDir(MagicPath):
         desc = self.descendents(include_self=True)
         return MagicList([d for d in desc if isinstance(d, MagicDir)])
 
+    def list_dirs(self):
+        """List immediate directories in this directory"""
+        return MagicList([c for c in self.children if isinstance(c, MagicDir)])
+
+    def list_files(self):
+        """List immediate files in this directory"""
+        return MagicList([c for c in self.children if isinstance(c, MagicFile)])
+
     @property
     def relpaths(self):
         """

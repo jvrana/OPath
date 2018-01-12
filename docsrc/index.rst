@@ -12,6 +12,8 @@ OPath is a library for encapsulating directory and file trees.
 It makes creating, moving, and deleting directories and files
 a breeze.
 
+**GitHub**: https://github.com/jvrana/opath
+
 .. toctree::
    :maxdepth: 3
 
@@ -35,26 +37,27 @@ Installation
 
 Its suggested you use `pipenv <https://pipenv.readthedocs.io/en/latest/>`__ to install OPath.
 
-OPath can be downloaded from |URL|.
+OPath can be downloaded from `PyPI here <https://pypi.python.org/pypi/opath/0.5.1>`__
 
-**Option 1: pipenv**
+**Option 1 (recommended): pipenv**
 
 To install, just cd into your project and run. Make sure to review how to use
 `pipenv <https://pipenv.readthedocs.io/en/latest/>`__.
+
+To install your project to the virtual environment
 
 .. code:: bash
 
    pipenv install opath
 
-To install your project to the virtual environment
 
 **Option 2: pip**
 
-If you want to use pip, cd into the OPath directory and run
+To install on your machine using pip/pip3
 
 .. code:: bash
 
-   pip install .
+   pip install opath
 
 Usage
 -----
@@ -198,17 +201,17 @@ API Reference
       :noindex:
 
 
-.. |travis build| image:: https://img.shields.io/travis/jvrana/magicdir.svg
-   :target: https://travis-ci.org/jvrana/magicdir
-.. |Coverage Status| image:: https://coveralls.io/repos/github/jvrana/magicdir/badge.svg?branch=master
-   :target: https://coveralls.io/github/jvrana/magicdir?branch=master
+.. |travis build| image:: https://img.shields.io/travis/jvrana/opath.svg
+   :target: https://travis-ci.org/jvrana/opath
+.. |Coverage Status| image:: https://coveralls.io/repos/github/jvrana/opath/badge.svg?branch=master
+   :target: https://coveralls.io/github/jvrana/opath?branch=master
 .. |PyPI version| image:: https://badge.fury.io/py/REPO.svg
    :target: https://badge.fury.io/py/REPO
 .. |License: MIT| image:: https://img.shields.io/badge/License-MIT-yellow.svg
    :target: https://opensource.org/licenses/MIT
-.. |travis build| image:: https://img.shields.io/travis/jvrana/magicdir/master.svg
-   :target: https://travis-ci.org/jvrana/magicdir/master
-.. |travis build| image:: https://img.shields.io/travis/jvrana/magicdir/development.svg
-   :target: https://travis-ci.org/jvrana/magicdir/development
-.. |Coverage Status| image:: https://coveralls.io/repos/github/jvrana/magicdir/badge.svg?branch=development
-   :target: https://coveralls.io/github/jvrana/magicdir?branch=development
+.. |travis build| image:: https://img.shields.io/travis/jvrana/opath/master.svg
+   :target: https://travis-ci.org/jvrana/opath/master
+.. |travis build| image:: https://img.shields.io/travis/jvrana/opath/development.svg
+   :target: https://travis-ci.org/jvrana/opath/development
+.. |Coverage Status| image:: https://coveralls.io/repos/github/jvrana/opath/badge.svg?branch=development
+   :target: https://coveralls.io/github/jvrana/opath?branch=development

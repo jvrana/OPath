@@ -12,6 +12,8 @@ OPath is a library for encapsulating directory and file trees.
 It makes creating, moving, and deleting directories and files
 a breeze.
 
+**GitHub**: https://github.com/jvrana/opath
+
 .. toctree::
    :maxdepth: 3
 
@@ -35,26 +37,27 @@ Installation
 
 Its suggested you use `pipenv <https://pipenv.readthedocs.io/en/latest/>`__ to install OPath.
 
-OPath can be downloaded from |URL|.
+OPath can be downloaded from `PyPI here <https://pypi.python.org/pypi/opath/0.5.1>`__
 
-**Option 1: pipenv**
+**Option 1 (recommended): pipenv**
 
 To install, just cd into your project and run. Make sure to review how to use
 `pipenv <https://pipenv.readthedocs.io/en/latest/>`__.
+
+To install your project to the virtual environment
 
 .. code:: bash
 
    pipenv install opath
 
-To install your project to the virtual environment
 
 **Option 2: pip**
 
-If you want to use pip, cd into the OPath directory and run
+To install on your machine using pip/pip3
 
 .. code:: bash
 
-   pip install .
+   pip install opath
 
 Usage
 -----

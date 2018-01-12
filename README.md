@@ -15,6 +15,8 @@ Branch | Build | Coverage
 Dealing with paths and directories isn't rocket science, but it can be a pain. **ODir** allows you to build directory trees by treating
 your directory tree as a first-class object.
 
+**Documentation** can be found here https://opath.readthedocs.io/en/latest/
+
 **without ODir**
 ```python
 # define paths

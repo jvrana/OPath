@@ -18,6 +18,9 @@ Dealing with paths and directories isn't rocket science, but it can be a
 pain. **ODir** allows you to build directory trees by treating your
 directory tree as a first-class object.
 
+**Documentation** can be found here
+https://opath.readthedocs.io/en/latest/
+
 **without ODir**
 
 .. code:: python
@@ -64,7 +67,7 @@ nested attributes in python objects
 Examples
 ========
 
-.. figure:: images/opath_example.gif?raw=true
+.. figure:: images/dir_example.gif?raw=true
    :alt: live\_example
 
    live\_example

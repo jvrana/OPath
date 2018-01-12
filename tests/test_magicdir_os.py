@@ -1,7 +1,6 @@
 import uuid
 
 from pathlib import Path
-from magicdir import MagicDir
 
 
 def test_mkdir_rmdir(env):
@@ -89,17 +88,17 @@ def test_mvdir_doesnt_exist(env, testing_dirs):
 def test_open(env):
 
     env.mkdirs()
-    env.A2.open('open_test.txt', 'w').write("stuff")
+    env.A2.open_file('open_test.txt', 'w').write("stuff")
 
     assert Path(env.A2.abspath, 'open_test.txt').is_file()
 
 def test_read_write(env):
 
     env.mkdirs()
-    env.A2.write('open_test.txt', 'w', 'stuff')
+    env.A2.write_file('open_test.txt', 'w', 'stuff')
 
     assert Path(env.A2.abspath, 'open_test.txt').is_file()
-    assert env.A2.read('open_test.txt', 'r') == 'stuff'
+    assert env.A2.read_file('open_test.txt', 'r') == 'stuff'
 
 def test_ls(env):
     env.mkdirs()
@@ -107,8 +106,8 @@ def test_ls(env):
 
 def test_glob(env):
     env.mkdirs()
-    env.A2.write('open_text.txt', 'w', 'stuff')
-    env.A2.write('open_text2.txt', 'w', 'stuff')
+    env.A2.write_file('open_text.txt', 'w', 'stuff')
+    env.A2.write_file('open_text2.txt', 'w', 'stuff')
     assert len(env.glob('*.txt')) == 0
     assert len(env.A2.glob("*.txt")) == 2
 

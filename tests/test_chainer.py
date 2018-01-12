@@ -1,23 +1,23 @@
 import pytest
 
-from magicdir import MagicChain, MagicList
+from opath import ObjChain, ChainList
 
 
 # TODO: better testing for push_up = False
 
 def test_chain_list():
     x = ["the", "cow", "jumped"]
-    x = MagicList(x)
+    x = ChainList(x)
     print(x)
     list(x)
     x.strip()
     assert [y.replace('e', 'a') for y in x] == list(x.replace("e", "a"))
 
-    empty = MagicList([])
+    empty = ChainList([])
     assert list(empty) == []
 
 def test_chain_equivalence():
-    parent = MagicChain()
+    parent = ObjChain()
     assert parent.root == parent
 
     child = parent._create_and_add_child('child')
@@ -34,7 +34,7 @@ def test_chain_equivalence():
 @pytest.fixture(params=[True, False])
 def test_chainer(request):
     pushup = request.param
-    a = MagicChain(push_up=pushup)
+    a = ObjChain(push_up=pushup)
     a._create_and_add_child('b1', )
     a._create_and_add_child('c1', )
     a.b1._create_and_add_child('b2', )
@@ -60,7 +60,7 @@ def test_chainer_add_child(test_chainer):
 
 
 def test_chaining():
-    a = MagicChain(push_up=True)
+    a = ObjChain(push_up=True)
     a._create_and_add_child('b1', )
     a._create_and_add_child('c1', )
     a.b1._create_and_add_child('b2', )
@@ -75,11 +75,11 @@ def test_chaining():
     children = a.descendents()
 
     children += [1]
-    assert type(children) is MagicList
+    assert type(children) is ChainList
 
 
 def test_ancestors():
-    a = MagicChain(push_up=True)
+    a = ObjChain(push_up=True)
     a._create_and_add_child('b1', )
     a.b1._create_and_add_child('c1', )
     d1 = a.c1._create_and_add_child('d1', )
@@ -92,7 +92,7 @@ def test_ancestors():
 
 
 def test_remove():
-    a = MagicChain(push_up=True)
+    a = ObjChain(push_up=True)
     a._create_and_add_child('b1', )
     a.b1._create_and_add_child('c1', )
     a.c1._create_and_add_child('d1', )
@@ -117,7 +117,7 @@ def test_remove():
 
 
 def test_remove_children():
-    a = MagicChain(push_up=True)
+    a = ObjChain(push_up=True)
     a._create_and_add_child('b1', )
     a._create_and_add_child('b2', )
     a.b1._create_and_add_child('c1', )
@@ -140,15 +140,14 @@ def test_remove_children():
 
 def test_set_raises_attr_error():
 
-    a = MagicChain()
+    a = ObjChain()
     a._create_and_add_child('b1')
     with pytest.raises(AttributeError):
         a.b1 = 4
 
 
 def test_sanitize_attr():
-
-    a = MagicChain(make_attr=True)
+    a = ObjChain()
     with pytest.raises(AttributeError):
         a._create_and_add_child('in')
     with pytest.raises(AttributeError):
@@ -159,14 +158,8 @@ def test_sanitize_attr():
         a._create_and_add_child(n)
 
 
-def test_dont_sanitize_attr():
-
-    a = MagicChain()
-    a._create_and_add_child('somefile.now.', make_attr=False)
-
-
-def test_default_make_attr_True__push_up_True():
-    a = MagicChain(make_attr=True, push_up=True)
+def test_default_push_up_True():
+    a = ObjChain(push_up=True)
     a._create_and_add_child('b')._create_and_add_child('c')
     assert hasattr(a, 'b')
     assert hasattr(a, 'c')
@@ -175,49 +168,11 @@ def test_default_make_attr_True__push_up_True():
     assert a.get('b').has('c')
 
 
-def test_default_make_attr_False__push_up_True():
-    a = MagicChain(make_attr=False, push_up=True)
-    bname = 'file.txt'
-    cname = 'file2.txt'
-    a._create_and_add_child(bname)._create_and_add_child(cname)
-    assert hasattr(a, bname)
-    assert hasattr(a, cname)
-    assert a.has(bname)
-    assert a.has(cname)
-    assert a.get(bname).has(cname)
-
-
-def test_default_make_attr_False__push_up_False():
-    a = MagicChain(make_attr=False, push_up=False)
-    bname = 'file.txt'
-    cname = 'file2.txt'
-    a._create_and_add_child(bname)._create_and_add_child(cname)
-    assert hasattr(a, bname)
-    assert not hasattr(a, cname)
-    assert a.has(bname)
-    assert not a.has(cname)
-    assert a.get(bname).has(cname)
-
-
-def test_default_make_attr_True__push_up_False():
-    a = MagicChain(make_attr=True, push_up=False)
+def test_default_push_up_False():
+    a = ObjChain(push_up=False)
     a._create_and_add_child('b')._create_and_add_child('c')
     assert hasattr(a, 'b')
     assert not hasattr(a, 'c')
     assert a.has('b')
     assert not a.has('c')
     assert a.get('b').has('c')
-
-# def test_attributes():
-#     a = Chainer(push_up=True)
-#     a._create_child('b1', )
-#     a._create_child('b2')
-#     a.b1._create_child('c1', )
-#     d1 = a.c1._create_child('d1', )
-#
-#     assert set(d1.ancestor_attrs('alias')) == set(['b1', 'c1', None])
-#     assert set(a.descendent_attrs('alias')) == set(['b1', 'b2', 'c1', 'd1'])
-#     assert set(a.b1.descendent_attrs('alias')) == set(['c1', 'd1'])
-
-
-

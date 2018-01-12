@@ -1,6 +1,6 @@
-from magicdir import MagicDir
+from magicdir import ODir
 
-env = MagicDir('bin')
+env = ODir('bin')
 s1 = env.add('core').add('session1')
 s2 = env.core.add('session2')
 t = env.session1.add('test')
@@ -11,5 +11,5 @@ assert t.abspath == env.test.abspath
 
 env.print()
 # wait 1
-env.test.write('test.txt', 'w', 'Wow! This was easy!')
+env.test.write('w', 'test.txt', 'Wow! This was easy!')
 

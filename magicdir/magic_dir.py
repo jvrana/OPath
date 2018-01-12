@@ -7,6 +7,8 @@ from pathlib import Path
 from . import utils
 from .magicchain import MagicChain, MagicList
 
+#TODO: touch with hidden file that indicates a managed directory or file
+
 
 class MagicPath(MagicChain):
     """ A generic path """
@@ -133,6 +135,7 @@ class MagicFile(MagicPath):
 class MagicDir(MagicPath):
     """ A directory object """
 
+    # TODO: this doesn't take into account files not in descendents
     @property
     def files(self):
         """

@@ -30,7 +30,7 @@ class Session(object):
         print("Switching to session \"{}\"".format(name))
 
 
-class Environment(MagicDir):
+class Environment(ODir):
     _shared_state = {}
 
     def __init__(self):

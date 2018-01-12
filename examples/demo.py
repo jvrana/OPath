@@ -1,6 +1,6 @@
-from magicdir import MagicDir
+from magicdir import ODir
 
-env = MagicDir('bin')
+env = ODir('bin')
 s1 = env.add('core').add('session1')
 s2 = env.core.add('session2')
 t = env.session1.add('test')

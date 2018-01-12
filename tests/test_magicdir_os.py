@@ -1,7 +1,6 @@
 import uuid
 
 from pathlib import Path
-from magicdir import MagicDir
 
 
 def test_mkdir_rmdir(env):

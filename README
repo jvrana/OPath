@@ -11,14 +11,14 @@ Build/Coverage Status
 | **development**   | |travis build|   | |Coverage Status|   |
 +-------------------+------------------+---------------------+
 
-📁 MagicDir 📁
-============
+📁 ODir 📁
+========
 
 Dealing with paths and directories isn't rocket science, but it can be a
-pain. **MagicDir** allows you to build directory trees by treating your
+pain. **ODir** allows you to build directory trees by treating your
 directory tree as a first-class object.
 
-Stop writing your directory trees like this:
+**without ODir**
 
 .. code:: python
 
@@ -30,17 +30,41 @@ Stop writing your directory trees like this:
     with open(os.path.join(bottom, 'bottomlog.txt', 'w') as f:
         f.write("some log information")
 
-And start writing them like this:
+**with ODir**
 
 .. code:: python
 
     # define paths
-    env = MagicDir('top').add('middle').add('bottom').root
+    env = ODir('top').add('middle').add('bottom').root
     env.bottom.write('log.txt', 'w', 'some log information')
 
-Live usage:
+Installation
+============
 
-.. figure:: images/magicdir_example.gif?raw=true
+Installation via pip is the easiest way...
+
+.. code:: bash
+
+    pip install opath
+
+Alternatives
+============
+
+Projects like
+`pathlib <https://docs.python.org/3/library/pathlib.html>`__ or
+`path.py <https://github.com/jaraco/path.py>`__ encapsulating paths into
+objects and may be better suited for you purposes.
+
+However, ODir provides some useful features for managing large directory
+tree structures. \* building directory and file structure trees as an
+abstract tree \* quick access to deeply nested directories and files
+using custom attribute names \* directories and files are treated as
+nested attributes in python objects
+
+Examples
+========
+
+.. figure:: images/opath_example.gif?raw=true
    :alt: live\_example
 
    live\_example
@@ -55,11 +79,11 @@ the following builds the directory skeleton for this repo.
 
 .. code:: python
 
-    from magicdir import *
+    from opath import *
 
     # create folder structure
-    env = MagicDir('magicdir')
-    env.add('magicdir', alias='core')
+    env = ODir('opath')
+    env.add('opath', alias='core')
     env.core.add('tests')
     env.tests.add('env')
     env.tests.add('env2')
@@ -69,7 +93,7 @@ the following builds the directory skeleton for this repo.
     env.mkdirs()
 
     # write some files
-    env.write('README.md', 'w', '# Magic Dir\nThis is a test readme file')
+    env.write('README.md', 'w', '# ODir\nThis is a test readme file')
     env.core.write("__init__.py", "w", "__version__ = \"1.0\"")
 
 Other things you can do:
@@ -102,8 +126,8 @@ You can even read and write files intuitively.
      # open file and read lines
     env.test.open('test.txt', 'r').readlines()
 
-All iterables are magically chainable making it easy to do complex
-things. Pretty cool!
+All iterables are chainable making it easy to do complex things. Pretty
+cool!
 
 .. code:: python
 
@@ -123,15 +147,6 @@ things. Pretty cool!
 Better documentation about chaining methods is soon to come along with
 recipes.
 
-Installation
-============
-
-Installation via pip is the easiest way...
-
-.. code:: bash
-
-    pip install magicdir
-
 Basic usage
 ===========
 
@@ -139,9 +154,9 @@ Use ``add`` to create folders.
 
 .. code:: python
 
-    from magicdir import *
+    from opath import *
 
-    env = MagicDir('bin')
+    env = ODir('bin')
     env.add('subfolder1')
     env.add('subfolder2')
     env.print()
@@ -151,11 +166,11 @@ Use ``add`` to create folders.
     |   *subfolder1
     |   *subfolder2
 
-Functions return MagicDir objects and so can be chained together.
+Functions return ODir objects and so can be chained together.
 
 .. code:: python
 
-    env = MagicDir('bin')
+    env = ODir('bin')
     env.add('subfolder1').add('subsubfolder')
     env.print()
 
@@ -164,25 +179,28 @@ Functions return MagicDir objects and so can be chained together.
     |   *subfolder1
     |   |   *subsubfolder
 
-Add can be chained together
+Files can be written quickly
 
 .. code:: python
 
-    env = MagicDir('bin')
+    env = ODir('bin')
     env.add('subfolder1').add('subsubfolder')
-    env.print()
+    env.subsubfolder.write('My Data', 'w')
 
-    >>>
-    *bin
-    |   *subfolder1
-    |   |   *subsubfolder
+Or a OFile can be added:
 
-Folders create accesible MagicDir attributes automatically. Alternative
+.. code:: python
+
+    env = ODir('bin')
+    env.add_file('myfile.txt', attr='myfile')
+    env.myfile.write('this is my data', 'w')
+
+Folders create accesible ODir attributes automatically. Alternative
 attribute names can be set using 'alias='
 
 .. code:: python
 
-    env = MagicDir('bin')
+    env = ODir('bin')
     env.add('subfolder1')
     env.subfolder1.add('misc')
     env.subfolder1.misc.add('.hidden', alias='hidden')
@@ -200,7 +218,7 @@ following is equivalent to above.
 
 .. code:: python
 
-    env = MagicDir('bin')
+    env = ODir('bin')
     env.add('subfolder1')
     env.subfolder1.add('misc')
     env.misc.add('.hidden', alias='hidden')
@@ -241,7 +259,7 @@ one-liners.
 
 .. code:: python
 
-    env.descendents() # returns a MagicList object
+    env.descendents() # returns a ChainList object
 
     # find all txt files
     env.descendents(include_self=True).glob("*.txt")
@@ -249,17 +267,17 @@ one-liners.
     # recursively change permissions for directories
     env.abspaths.chmod(0o444)
 
-.. |travis build| image:: https://img.shields.io/travis/jvrana/magicdir.svg
-   :target: https://travis-ci.org/jvrana/magicdir
-.. |Coverage Status| image:: https://coveralls.io/repos/github/jvrana/magicdir/badge.svg?branch=master
-   :target: https://coveralls.io/github/jvrana/magicdir?branch=master
+.. |travis build| image:: https://img.shields.io/travis/jvrana/opath.svg
+   :target: https://travis-ci.org/jvrana/opath
+.. |Coverage Status| image:: https://coveralls.io/repos/github/jvrana/opath/badge.svg?branch=master
+   :target: https://coveralls.io/github/jvrana/opath?branch=master
 .. |PyPI version| image:: https://badge.fury.io/py/REPO.svg
    :target: https://badge.fury.io/py/REPO
 .. |License: MIT| image:: https://img.shields.io/badge/License-MIT-yellow.svg
    :target: https://opensource.org/licenses/MIT
-.. |travis build| image:: https://img.shields.io/travis/jvrana/magicdir/master.svg
-   :target: https://travis-ci.org/jvrana/magicdir/master
-.. |travis build| image:: https://img.shields.io/travis/jvrana/magicdir/development.svg
-   :target: https://travis-ci.org/jvrana/magicdir/development
-.. |Coverage Status| image:: https://coveralls.io/repos/github/jvrana/magicdir/badge.svg?branch=development
-   :target: https://coveralls.io/github/jvrana/magicdir?branch=development
+.. |travis build| image:: https://img.shields.io/travis/jvrana/opath/master.svg
+   :target: https://travis-ci.org/jvrana/opath/master
+.. |travis build| image:: https://img.shields.io/travis/jvrana/opath/development.svg
+   :target: https://travis-ci.org/jvrana/opath/development
+.. |Coverage Status| image:: https://coveralls.io/repos/github/jvrana/opath/badge.svg?branch=development
+   :target: https://coveralls.io/github/jvrana/opath?branch=development

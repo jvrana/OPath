@@ -1,3 +1,7 @@
+"""
+Object encapsulation of directory/file trees
+"""
+
 import glob
 import json
 import os
@@ -5,15 +9,21 @@ from copy import deepcopy
 from pathlib import Path
 
 from . import utils
-from .magicchain import MagicChain, MagicList
+from .objchain import ObjChain, ChainList
+
+#TODO: touch with hidden file that indicates a managed directory or file
 
 
-class MagicPath(MagicChain):
+class OPath(ObjChain):
     """ A generic path """
 
     def __init__(self, name, push_up=True, check_attr=True):
         """
+<<<<<<< HEAD:magicdir/magic_dir.py
         Initializer for MagicPath
+=======
+        Initializer for OPath
+>>>>>>> refactoring:opath/opath.py
 
         :param name: basename of the path
         :type name: str
@@ -30,7 +40,7 @@ class MagicPath(MagicChain):
     @property
     def dir(self):
         """ The parent directory of this location"""
-        return self.root._parent_dir
+        return str(self.root._parent_dir)
 
     @property
     def relpath(self):
@@ -40,7 +50,7 @@ class MagicPath(MagicChain):
     @property
     def path(self):
         """ Path of this location"""
-        return Path(self.dir, *self.ancestors(include_self=True).name)
+        return Path(str(self.dir), *self.ancestors(include_self=True).name)
 
     @property
     def abspath(self):
@@ -49,7 +59,7 @@ class MagicPath(MagicChain):
 
     def set_dir(self, path):
         """ Set the parent directory """
-        self.root._parent_dir = path
+        self.root._parent_dir = str(path)
         return path
 
     def remove_parent(self):
@@ -97,7 +107,7 @@ class MagicPath(MagicChain):
         return s
 
 
-class MagicFile(MagicPath):
+class OFile(OPath):
     """ A file object """
 
     def write(self, data, mode='w', **kwargs):
@@ -112,11 +122,11 @@ class MagicFile(MagicPath):
         """ Opens a file for reading or writing """
         return self.parent.open_file(self.name, mode, **kwargs)
 
-    def dump(self, data, mode='w', **json_kwargs):
+    def dump_json(self, data, mode='w', **json_kwargs):
         """Dump data as a json"""
         return self.parent.dump_json(self.name, mode, data, **json_kwargs)
 
-    def load(self, mode='r', **json_kwargs):
+    def load_json(self, mode='r', **json_kwargs):
         """Load data from json"""
         return self.parent.load_json(self.name, mode, **json_kwargs)
 
@@ -130,30 +140,39 @@ class MagicFile(MagicPath):
             os.remove(str(self.abspath))
 
 
-class MagicDir(MagicPath):
+class ODir(OPath):
     """ A directory object """
 
+    # TODO: this doesn't take into account files not in descendents
     @property
     def files(self):
         """
-        Recursively returns all files <MagicFile> of this directory. Does not include parent directories.
+        Recursively returns all files :class:`OFile` of this directory. Does not include parent directories.
 
-        :return: list of MagicFiles
+        :return: list of OFiles
         :rtype: list
         """
         desc = self.descendents(include_self=True)
-        return MagicList([d for d in desc if d.__class__ is MagicFile])
+        return ChainList([d for d in desc if isinstance(d, OFile)])
 
     @property
     def dirs(self):
         """
-        Recursively returns all directories <MagicDir> of this directory. Does not include parent directories.
+        Recursively returns all directories :class:`ODir` of this directory. Does not include parent directories.
 
-        :return: list of MagicDir
+        :return: list of ODir
         :rtype: list
         """
         desc = self.descendents(include_self=True)
-        return MagicList([d for d in desc if d.__class__ is self.__class__])
+        return ChainList([d for d in desc if isinstance(d, ODir)])
+
+    def list_dirs(self):
+        """List immediate directories in this directory"""
+        return ChainList([c for c in self.children if isinstance(c, ODir)])
+
+    def list_files(self):
+        """List immediate files in this directory"""
+        return ChainList([c for c in self.children if isinstance(c, OFile)])
 
     @property
     def relpaths(self):
@@ -199,7 +218,7 @@ class MagicDir(MagicPath):
          Creates all directories in the directory tree. Existing directories are ignored.
 
         :return: self
-        :rtype: MagicDir
+        :rtype: ODir
         """
         for p in self.abspaths:
             utils.makedirs(p, exist_ok=True)
@@ -210,7 +229,7 @@ class MagicDir(MagicPath):
          Recursively removes all files and directories of this directory (inclusive)
 
         :return: self
-        :rtype: MagicDir
+        :rtype: ODir
         """
         if self.abspath.is_dir():
             utils.rmtree(self.abspath)
@@ -223,7 +242,7 @@ class MagicDir(MagicPath):
         :param new_parent: path of new parent directory
         :type new_parent: basestring or PosixPath or Path object
         :return: copied directory
-        :rtype: MagicDir
+        :rtype: ODir
         """
         utils.copytree(self.abspath, Path(new_parent, self.name))
         copied_dirs = deepcopy(self)
@@ -288,11 +307,11 @@ class MagicDir(MagicPath):
         default to defaults defined on initialization
         :type check_attr: boolean|None
         :return: new directory
-        :rtype: MagicDir
+        :rtype: ODir
         """
         if attr is None:
             attr = name
-        existing = self._validate_add(name, attr, MagicDir, self.children.name)
+        existing = self._validate_add(name, attr, ODir, self.children.name)
         if existing:
             return existing
         return self._create_and_add_child(attr, with_attributes={"name": name}, push_up=push_up, check_attr=check_attr)
@@ -311,14 +330,14 @@ class MagicDir(MagicPath):
         default to defaults defined on initialization
         :type check_attr: boolean|None
         :return: new directory
-        :rtype: MagicDir
+        :rtype: ODir
         """
         if attr is None:
             attr = name
-        existing = self._validate_add(name, attr, MagicFile, self.files.name)
+        existing = self._validate_add(name, attr, OFile, self.files.name)
         if existing:
             return existing
-        file = MagicFile(name)
+        file = OFile(name)
         self._add(attr, file, push_up=push_up, check_attr=check_attr)
         return file
 

@@ -47,8 +47,8 @@ def test_file_dump_load(file_env):
     file_env.mkdirs()
 
     mydata = {'x': 5, 'y': 4}
-    file_env.testjson.dump(mydata, 'w')
-    loaded = file_env.testjson.load('r')
+    file_env.testjson.dump_json(mydata, 'w')
+    loaded = file_env.testjson.load_json('r')
 
 
 def test_open(file_env):

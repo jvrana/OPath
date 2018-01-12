@@ -12,9 +12,9 @@ pathlib = "*"
 
 [dev-packages]
 
+sphinx = "*"
 pytest = "*"
-pytest-runner = "*"
-python-coveralls = "*"
-"pytest-pep8" = "*"
-tox = "*"
+pytest-cov = "*"
 pandoc = "*"
+tox = "*"
+pylint = "*"

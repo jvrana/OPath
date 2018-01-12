@@ -1,7 +1,7 @@
 import pytest
-from magicdir import ODir
+from opath import ODir
 from pathlib import Path
-from magicdir import utils
+from opath import utils
 
 
 @pytest.fixture(scope="function")
@@ -18,6 +18,7 @@ def testing_dirs(tmpdir):
     env1.mkdir()
     env2.mkdir()
     return env1, env2
+
 
 @pytest.fixture(scope="function")
 def env(tmpdir):

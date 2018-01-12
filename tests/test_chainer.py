@@ -1,6 +1,6 @@
 import pytest
 
-from magicdir import ObjChain, ChainList
+from opath import ObjChain, ChainList
 
 
 # TODO: better testing for push_up = False

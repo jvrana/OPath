@@ -1,4 +1,4 @@
-from magicdir import ODir
+from opath import ODir
 import pytest
 
 @pytest.fixture(params=[True, False])

@@ -6,6 +6,7 @@ import keyword
 from copy import copy
 from functools import wraps
 
+
 class ChainList(list):
     """List-like class that collects attributes and applies functions
     but functions like a list in every other regard.
@@ -231,15 +232,14 @@ class ObjChain(object):
         :type attr: str
         :param child: child node to add
         :type child: ObjChain
-        :param push_up: whether to add the child node to the root node. If True, the
-        child will be able to be accessed from the root node.
+        :param push_up: whether to add the child node to the root node. If True, the child will be able to be accessed from the root node.
         :type push_up: boolean
-        :param check_attr: if True, will raise exception if attr is not a valid attribute. If None, value will
-        default to defaults defined on initialization
-        :type check_attr: boolean|None
+        :param check_attr: if True, will raise exception if attr is not a valid attribute. If None, value will default to defaults defined on initialization
+        :type check_attr: boolean or None
         :return: the child node
         :rtype: ObjChain
         """
+
         opts = self._opts(push_up=push_up, check_attr=check_attr)
         if opts['check_attr']:
             self._sanitize_identifier(attr)
@@ -280,9 +280,8 @@ class ObjChain(object):
         :type with_attributes: dict
         :param push_up: whether to push the new node to root.
         :type push_up: boolean
-        :param check_attr: if True, will raise exception if attr is not a valid attribute. If None, value will
-        default to defaults defined on initialization
-        :type check_attr: boolean|None
+        :param check_attr: if True, will raise exception if attr is not a valid attribute. If None, value will default to defaults defined on initialization
+        :type check_attr: boolean or None
         :return: the newly added child node
         :rtype: ObjChain
         """
@@ -355,4 +354,3 @@ class ObjChain(object):
     def __dir__(self):
         """Gives dynamic interpreters access to available nodes"""
         return super().__dir__() + list(self._children.keys()) + list(self._grandchildren.keys())
-

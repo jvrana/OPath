@@ -37,11 +37,24 @@ Its suggested you use `pipenv <https://pipenv.readthedocs.io/en/latest/>`__ to i
 
 OPath can be downloaded from |URL|.
 
-To install, just cd into OPath and run
+**Option 1: pipenv**
+
+To install, just cd into your project and run. Make sure to review how to use
+`pipenv <https://pipenv.readthedocs.io/en/latest/>`__.
 
 .. code:: bash
 
-   pipenv install
+   pipenv install opath
+
+To install your project to the virtual environment
+
+**Option 2: pip**
+
+If you want to use pip, cd into the OPath directory and run
+
+.. code:: bash
+
+   pip install .
 
 Usage
 -----
@@ -163,6 +176,16 @@ one-liners.
 
     # recursively change permissions for directories
     env.abspaths.chmod(0o444)
+
+
+Running Tests
+-------------
+
+To run tests, cd into the OPath directory and run
+
+.. code:: bash
+
+   pipenv run pytest
 
 
 API Reference

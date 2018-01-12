@@ -5,6 +5,7 @@ PIP=pip3
 init:
 	$(PIP) install pipenv --upgrade
 	pipenv install --dev --skip-lock
+	pipenv update  # not sure why I have to add this now...
 
 
 test:
@@ -12,12 +13,12 @@ test:
 
 
 pylint:
-	pipenv run pylint -E pydent
+	pipenv run pylint -E opath
 
 
 coverage:
 	@echo "Coverage"
-	pipenv run py.test --cov-config .coveragerc --verbose --cov-report term --cov-report xml --cov=pydent tests
+	pipenv run py.test --cov-config .coveragerc --verbose --cov-report term --cov-report xml --cov=opath tests
 
 
 docs:

@@ -14,15 +14,21 @@ install_requires = [
 ]
 
 
+def sanitize_string(str):
+    str = str.replace('\"', '')
+    str = str.replace("\'", '')
+    return str
+
+
 def parse_version_file():
     """Parse the __version__.py file"""
     here = os.path.abspath(os.path.dirname(__file__))
     ver_dict = {}
-    with open(os.path.join(here, 'pydent', '__version__.py'), 'r') as f:
+    with open(os.path.join(here, 'opath', '__version__.py'), 'r') as f:
         for line in f.readlines():
             m = re.match('__(\w+)__\s*=\s*(.+)', line)
             if m:
-                ver_dict[m.group(1)] = m.group(2)
+                ver_dict[m.group(1)] = sanitize_string(m.group(2))
     return ver_dict
 
 
@@ -37,7 +43,7 @@ ver = parse_version_file()
 setup(
         name=ver['title'],
         version=ver['version'],
-        packages=["opath"],
+        packages=[ver['package']],
         url='https://github.com/jvrana/opath',
         license=ver['license'],
         author=ver['author'],

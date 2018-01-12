@@ -36,7 +36,7 @@ class OPath(ObjChain):
     @property
     def dir(self):
         """ The parent directory of this location"""
-        return self.root._parent_dir
+        return str(self.root._parent_dir)
 
     @property
     def relpath(self):
@@ -46,7 +46,7 @@ class OPath(ObjChain):
     @property
     def path(self):
         """ Path of this location"""
-        return Path(self.dir, *self.ancestors(include_self=True).name)
+        return Path(str(self.dir), *self.ancestors(include_self=True).name)
 
     @property
     def abspath(self):
@@ -55,7 +55,7 @@ class OPath(ObjChain):
 
     def set_dir(self, path):
         """ Set the parent directory """
-        self.root._parent_dir = path
+        self.root._parent_dir = str(path)
         return path
 
     def remove_parent(self):

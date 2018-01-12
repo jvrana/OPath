@@ -1,0 +1,30 @@
+language: python
+python:
+- '3.3'
+- '3.4'
+- '3.5'
+- 3.5-dev
+- '3.6'
+- 3.6-dev
+- 3.7-dev
+- nightly
+install:
+- pip install .
+before_install:
+- pip install pyandoc
+- pip install pytest pytest-cov
+- pip install coveralls
+after_install:
+- pandoc --from=markdown --to=rst --output=README README.md
+script:
+- python -m pytest tests/ --cov opath --cov-report term-missing
+after_success:
+- coveralls
+deploy:
+  provider: pypi
+  user: jvrana
+  password:
+    secure: AHTry6wgWc+Y3dKQOk3Szbm8yQwulhNXMcDCEPzwzALyZi1GvJ36eXzHI6dE/tNXBt/x12P55TIOzIFVT3Eh0+jPSaP7XIH+zudlYValhD/SE6EJkwT2I03KcRaDRobW79BphiBSAB7sQ43JJR978RLITip3FmGwBLp+HSfIa6BB7XNcEvtJHLlOwR7NWyC7hqzPhosV9ZDt7xLJZLXeNBiqDRHdBs3DmQtzIwPSuV35NngYW/Z3h5IwrqtLfijpyVCN9QW9o5n9aEojN6M+qFs8DSFHsgLk/eWvTKJU03QFLU5LC5dx89198g5wpD3JcrchN8b+SLG7TpK8FoOykpdlL+Cl8h/8cxuHKBN9BqsvtWo1QsWCJaHxP6H8qJDAEf/nM9ezV+dxpCNPCgQBki2vjhn5/6uMrmBhTp+JXwUVUNlF/QGKbnb/rbWnZxiyUEz8Jh8meYveOwzYd92+BC+RK/kziy5ZqoqDR/RNRUMSQV6VC+eVSnOWYtkCr5hg+L+n3THooEmWTdYYIgAfLO2rV76Kb0l/dAVbWUPDbH9ac/FouJPGs3FpE1fwxxDmQfrjnqRS6o2D6iYB7pvynDt9DmDfozxNed68xmHg09i/YPele7PIz+u/0V3xdiL2xVr3DZq98w67i9LbLLa8kUOV3U/rFUqp9mIJYMiN6JE=
+  on:
+    tags: true
+    branch: master

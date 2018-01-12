@@ -1,47 +1,52 @@
+"""
+Chaining methods for chaining nested objects together
+"""
+
 import keyword
 from copy import copy
+from functools import wraps
 
-
-class MagicList(list):
+class ChainList(list):
     """List-like class that collects attributes and applies functions
     but functions like a list in every other regard.
 
     .. code-block:: python
 
-        m1 = MagicList(["string1   ", "   string2"])
+        m1 = ChainList(["string1   ", "   string2"])
         m1.strip().upper() # ["STRING1", "STRING2"]
     """
 
     def __getattr__(self, item):
-        return MagicList([getattr(x, item) for x in self])
+        return ChainList([getattr(x, item) for x in self])
 
     def __call__(self, *args, **kwargs):
-        return MagicList([x(*args, **kwargs) for x in self])
+        return ChainList([x(*args, **kwargs) for x in self])
 
 
-def magiclist(fxn):
-    """Decorator that turns a returned value from a list to a MagicList (if possible)"""
+def chainable_list(fxn):
+    """Decorator that turns a returned value from a list to a ChainList (if possible)"""
 
-    def magiclist_wrapper(*args, **kwargs):
+    @wraps(fxn)
+    def chainable_wrapper(*args, **kwargs):
         ret = fxn(*args, **kwargs)
         try:
             iter(ret)
-            ret = MagicList(ret)
+            ret = ChainList(ret)
         except TypeError:
             # not iterable
             pass
         return ret
 
-    return magiclist_wrapper
+    return chainable_wrapper
 
 
 # TODO: Could implement this as a MutableMapping, oh well...
-class MagicChain(object):
+class ObjChain(object):
     """
     A tree-like class for chaining commands and attributes together with special
     root/head handling.
 
-    Each attribute creates a new MagicChain instance (a 'node') which acts like a node in a
+    Each attribute creates a new ObjChain instance (a 'node') which acts like a node in a
     linked list.
 
     .. code-block:: python
@@ -51,38 +56,33 @@ class MagicChain(object):
     New nodes can be 'pushed_up'
     """
 
-    def __init__(self, push_up=None, make_attr=None):
+    def __init__(self, push_up=False, check_attr=True):
         """
         Chainer constructor
 
         :param parent: parent node that called this object
-        :type parent: MagicChain
+        :type parent: ObjChain
         :param push_up: whether to push up node to the root node by default
         :type push_up: boolean
-        :param make_attr: whether to make nodes accessible by attribute
-        :type make_attr: boolean
         """
         self._parent = None
         self._children = {}
         self._grandchildren = {}
-        self._push_up = False
-        self._make_attr = False
 
-        if push_up is not None:
-            self._push_up = push_up
-        if make_attr is not None:
-            self._make_attr = make_attr
+        self._defaults = dict(
+            push_up=push_up,
+            check_attr=check_attr
+        )
 
     # TODO: add dynamic attr that looks at parent? It would be really slow...
 
     def _opts(self, **opts):
         """Returns the options dictionary. If passed opts has a None value,
         default option is used."""
-        default_opts = dict(push_up=self._push_up, make_attr=self._make_attr)
-        opts = dict(opts)  # copy dictionary
+        myopts = dict(self._defaults)
         for key, value in opts.items():
-            default_opts.update({} if value is None else {key: value})
-        return default_opts
+            myopts.update({} if value is None else {key: value})
+        return myopts
 
     @property
     def attr(self):
@@ -98,7 +98,7 @@ class MagicChain(object):
         return self._parent
 
     @property
-    @magiclist
+    @chainable_list
     def children(self):
         """This nodes descendent notes"""
         return self._children.values()
@@ -114,14 +114,14 @@ class MagicChain(object):
         """Whether this node is the root/head node"""
         return self is self.root
 
-    @magiclist
+    @chainable_list
     def descendents(self, include_self=False):
         """
         All descendent nodes
 
         :param include_self: Whether to include this node in the return list
         :type include_self: boolean
-        :return: list of descendent nodes (list of MagicChain instances)
+        :return: list of descendent nodes (list of ObjChain instances)
         :rtype: list
         """
         c = []
@@ -134,14 +134,14 @@ class MagicChain(object):
                 c += child.descendents()
         return c
 
-    @magiclist
+    @chainable_list
     def ancestors(self, include_self=False):
         """
         All ancestral nodes
 
         :param include_self: Whether to include this node in the return list
         :type include_self: boolean
-        :return: list of ancestor nodes (list of MagicChain instances)
+        :return: list of ancestor nodes (list of ObjChain instances)
         :rtype: list
         """
         p = []
@@ -223,25 +223,25 @@ class MagicChain(object):
     #     if child.attr in self.root._grandchildren:
     #         raise AttributeError("Cannot push attr {} to root. Try using a unique attr.".format(child.attr))
 
-    def _add(self, attr, child, push_up=None, make_attr=None):
+    def _add(self, attr, child, push_up=None, check_attr=None):
         """
         Adds child node to this node.
 
         :param attr: name to use to reference the child
         :type attr: str
         :param child: child node to add
-        :type child: MagicChain
+        :type child: ObjChain
         :param push_up: whether to add the child node to the root node. If True, the
         child will be able to be accessed from the root node.
         :type push_up: boolean
-        :param make_attr: whether to give access to this node via attribute format. For
-        example, with attr='mynode', parent.mynode would give access to the child node
-        :type make_attr: boolean
+        :param check_attr: if True, will raise exception if attr is not a valid attribute. If None, value will
+        default to defaults defined on initialization
+        :type check_attr: boolean|None
         :return: the child node
-        :rtype: MagicChain
+        :rtype: ObjChain
         """
-        opts = self._opts(push_up=push_up, make_attr=make_attr)
-        if opts['make_attr']:
+        opts = self._opts(push_up=push_up, check_attr=check_attr)
+        if opts['check_attr']:
             self._sanitize_identifier(attr)
         self._validate_attr(attr, opts['push_up'])
         self._children[attr] = child
@@ -258,7 +258,7 @@ class MagicChain(object):
         :param with_attributes: list of attributes to apply to child
         :type with_attributes: dict
         :return: child node
-        :rtype: MagicChain
+        :rtype: ObjChain
         """
         c = copy(self)
         c._parent = self
@@ -270,7 +270,7 @@ class MagicChain(object):
             setattr(c, k, v)
         return c
 
-    def _create_and_add_child(self, attr, with_attributes=None, push_up=None, make_attr=None):
+    def _create_and_add_child(self, attr, with_attributes=None, push_up=None, check_attr=None):
         """
         Copy this node and adds the node as a child
 
@@ -280,14 +280,14 @@ class MagicChain(object):
         :type with_attributes: dict
         :param push_up: whether to push the new node to root.
         :type push_up: boolean
-        :param make_attr: whether to give parent nodes access to this node via an attribute
-        :type make_attr: boolean
+        :param check_attr: if True, will raise exception if attr is not a valid attribute. If None, value will
+        default to defaults defined on initialization
+        :type check_attr: boolean|None
         :return: the newly added child node
-        :rtype: MagicChain
+        :rtype: ObjChain
         """
-        opts = self._opts(push_up=push_up, make_attr=make_attr)
         child = self._create_child(with_attributes)
-        return self._add(attr, child, **opts)
+        return self._add(attr, child, push_up, check_attr)
 
     def _remove_child(self, attr):
         """
@@ -296,7 +296,7 @@ class MagicChain(object):
         :param attr: the attribute name of the node
         :type attr: str
         :return: the removed child, else return None
-        :rtype: MagicChain or None
+        :rtype: ObjChain or None
         """
         if attr in self._children:
             return self._children.pop(attr)

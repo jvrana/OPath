@@ -1,0 +1,20 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+
+pathlib = "*"
+
+
+[dev-packages]
+
+pytest = "*"
+pytest-runner = "*"
+python-coveralls = "*"
+"pytest-pep8" = "*"
+tox = "*"
+pandoc = "*"

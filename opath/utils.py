@@ -1,3 +1,7 @@
+"""
+Utility methods for managing files and directories
+"""
+
 import os
 import shutil
 

@@ -1,3 +1,7 @@
+"""
+Object encapsulation of directory/file trees
+"""
+
 import glob
 import json
 import os
@@ -5,14 +9,27 @@ from copy import deepcopy
 from pathlib import Path
 
 from . import utils
-from .magicchain import MagicChain, MagicList
+from .objchain import ObjChain, ChainList
+
+#TODO: touch with hidden file that indicates a managed directory or file
 
 
-class MagicPath(MagicChain):
+class OPath(ObjChain):
     """ A generic path """
 
-    def __init__(self, name, push_up=True, make_attr=True):
-        super().__init__(push_up=push_up, make_attr=make_attr)
+    def __init__(self, name, push_up=True, check_attr=True):
+        """
+        Initializer for OPath
+
+        :param name: basename of the path
+        :type name: str
+        :param push_up: default of whether to 'push' access of this path to the root path node
+        :type push_up: boolean
+        :param check_attr: default to validate attributes. For example 'this is not valid' is not a valid
+                            attribute since it contains spaces but 'this_is_a_valid_attribute' is a valid attribute.
+        :type check_attr: boolean
+        """
+        super().__init__(push_up=push_up, check_attr=check_attr)
         self.name = name
         self._parent_dir = ''
 
@@ -86,28 +103,28 @@ class MagicPath(MagicChain):
         return s
 
 
-class MagicFile(MagicPath):
+class OFile(OPath):
     """ A file object """
 
-    def write(self, mode, data, *args, **kwargs):
+    def write(self, data, mode='w', **kwargs):
         """ Write data to a file """
-        return self.parent.write(self.name, mode, data, *args, **kwargs)
+        return self.parent.write_file(self.name, mode, data, **kwargs)
 
-    def read(self, mode, *args, **kwargs):
+    def read(self, mode='r', **kwargs):
         """ Read data from a file """
-        return self.parent.read(self.name, mode, *args, **kwargs)
+        return self.parent.read_file(self.name, mode, **kwargs)
 
-    def open(self, mode, *args, **kwargs):
+    def open(self, mode='r', **kwargs):
         """ Opens a file for reading or writing """
-        return self.parent.open(self.name, mode, *args, **kwargs)
+        return self.parent.open_file(self.name, mode, **kwargs)
 
-    def dump(self, data, mode='w', **kwargs):
+    def dump_json(self, data, mode='w', **json_kwargs):
         """Dump data as a json"""
-        return self.parent.dump(self.name, mode, data, **kwargs)
+        return self.parent.dump_json(self.name, mode, data, **json_kwargs)
 
-    def load(self, mode='r', **kwargs):
+    def load_json(self, mode='r', **json_kwargs):
         """Load data from json"""
-        return self.parent.load(self.name, mode, **kwargs)
+        return self.parent.load_json(self.name, mode, **json_kwargs)
 
     def exists(self):
         """ Whether the file exists """
@@ -119,30 +136,39 @@ class MagicFile(MagicPath):
             os.remove(str(self.abspath))
 
 
-class MagicDir(MagicPath):
+class ODir(OPath):
     """ A directory object """
 
+    # TODO: this doesn't take into account files not in descendents
     @property
     def files(self):
         """
-        Recursively returns all files <MagicFile> of this directory. Does not include parent directories.
+        Recursively returns all files :class:`OFile` of this directory. Does not include parent directories.
 
-        :return: list of MagicFiles
+        :return: list of OFiles
         :rtype: list
         """
         desc = self.descendents(include_self=True)
-        return MagicList([d for d in desc if d.__class__ is MagicFile])
+        return ChainList([d for d in desc if isinstance(d, OFile)])
 
     @property
     def dirs(self):
         """
-        Recursively returns all directories <MagicDir> of this directory. Does not include parent directories.
+        Recursively returns all directories :class:`ODir` of this directory. Does not include parent directories.
 
-        :return: list of MagicDir
+        :return: list of ODir
         :rtype: list
         """
         desc = self.descendents(include_self=True)
-        return MagicList([d for d in desc if d.__class__ is self.__class__])
+        return ChainList([d for d in desc if isinstance(d, ODir)])
+
+    def list_dirs(self):
+        """List immediate directories in this directory"""
+        return ChainList([c for c in self.children if isinstance(c, ODir)])
+
+    def list_files(self):
+        """List immediate files in this directory"""
+        return ChainList([c for c in self.children if isinstance(c, OFile)])
 
     @property
     def relpaths(self):
@@ -188,7 +214,7 @@ class MagicDir(MagicPath):
          Creates all directories in the directory tree. Existing directories are ignored.
 
         :return: self
-        :rtype: MagicDir
+        :rtype: ODir
         """
         for p in self.abspaths:
             utils.makedirs(p, exist_ok=True)
@@ -199,7 +225,7 @@ class MagicDir(MagicPath):
          Recursively removes all files and directories of this directory (inclusive)
 
         :return: self
-        :rtype: MagicDir
+        :rtype: ODir
         """
         if self.abspath.is_dir():
             utils.rmtree(self.abspath)
@@ -212,7 +238,7 @@ class MagicDir(MagicPath):
         :param new_parent: path of new parent directory
         :type new_parent: basestring or PosixPath or Path object
         :return: copied directory
-        :rtype: MagicDir
+        :rtype: ODir
         """
         utils.copytree(self.abspath, Path(new_parent, self.name))
         copied_dirs = deepcopy(self)
@@ -263,7 +289,7 @@ class MagicDir(MagicPath):
                     expected_type.__name__, name, self, ', '.join(blacklisted_names)))
 
     # TODO: exist_ok kwarg
-    def add(self, name, attr=None, push_up=None, make_attr=None):
+    def add(self, name, attr=None, push_up=None, check_attr=None):
         """
         Adds a new directory to the directory tree.
 
@@ -273,20 +299,20 @@ class MagicDir(MagicPath):
         :type attr: basestring
         :param push_up: whether to 'push' attribute to the root, where it can be accessed
         :type push_up: boolean
-        :param make_attr: whether to sanitize attribute to access (e.g. '.secrets' and 'with' are not a valid
-        attributes)
-        :type make_attr:
+        :param check_attr: if True, will raise exception if attr is not a valid attribute. If None, value will
+        default to defaults defined on initialization
+        :type check_attr: boolean|None
         :return: new directory
-        :rtype: MagicDir
+        :rtype: ODir
         """
         if attr is None:
             attr = name
-        existing = self._validate_add(name, attr, MagicDir, self.children.name)
+        existing = self._validate_add(name, attr, ODir, self.children.name)
         if existing:
             return existing
-        return self._create_and_add_child(attr, with_attributes={"name": name}, push_up=push_up, make_attr=make_attr)
+        return self._create_and_add_child(attr, with_attributes={"name": name}, push_up=push_up, check_attr=check_attr)
 
-    def add_file(self, name, attr=None, push_up=None, make_attr=None):
+    def add_file(self, name, attr=None, push_up=None, check_attr=False):
         """
         Adds a new file to the directory tree.
 
@@ -296,44 +322,44 @@ class MagicDir(MagicPath):
         :type attr: basestring
         :param push_up: whether to 'push' attribute to the root, where it can be accessed
         :type push_up: boolean
-        :param make_attr: whether to sanitize attribute to access (e.g. '.secrets' and 'with' are not a valid
-        attributes)
-        :type make_attr:
+        :param check_attr: if True, will raise exception if attr is not a valid attribute. If None, value will
+        default to defaults defined on initialization
+        :type check_attr: boolean|None
         :return: new directory
-        :rtype: MagicDir
+        :rtype: ODir
         """
         if attr is None:
             attr = name
-        existing = self._validate_add(name, attr, MagicFile, self.files.name)
+        existing = self._validate_add(name, attr, OFile, self.files.name)
         if existing:
             return existing
-        file = MagicFile(name)
-        self._add(attr, file, push_up=push_up, make_attr=make_attr)
+        file = OFile(name)
+        self._add(attr, file, push_up=push_up, check_attr=check_attr)
         return file
 
-    def write(self, filename, mode, data, *args, **kwargs):
+    def write_file(self, filename, mode, data, **kwargs):
         """ Write  a file at this location """
         utils.makedirs(self.abspath)
-        with self.open(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
+        with self.open_file(str(Path(self.abspath, filename)), mode, **kwargs) as f:
             f.write(data)
 
-    def read(self, filename, mode, *args, **kwargs):
+    def read_file(self, filename, mode, **kwargs):
         """ Read a file at this location """
-        with self.open(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
+        with self.open_file(str(Path(self.abspath, filename)), mode, **kwargs) as f:
             return f.read()
 
-    def open(self, filename, mode, *args, **kwargs):
+    def open_file(self, filename, mode, **kwargs):
         """ Open a file at this location """
         utils.makedirs(self.abspath)
-        return utils.fopen(str(Path(self.abspath, filename)), mode, *args, **kwargs)
+        return utils.fopen(str(Path(self.abspath, filename)), mode, **kwargs)
 
-    def dump(self, filename, mode, data, *args, **kwargs):
+    def dump_json(self, filename, mode, data, *args, **json_kwargs):
         """Dump data to json"""
         utils.makedirs(self.abspath)
-        with self.open(str(Path(self.abspath, filename)), mode) as f:
-            json.dump(data, f, *args, **kwargs)
+        with self.open_file(str(Path(self.abspath, filename)), mode) as f:
+            json.dump(data, f, *args, **json_kwargs)
 
-    def load(self, filename, mode, *args, **kwargs):
+    def load_json(self, filename, mode, **kwargs):
         """Load data from a json"""
-        with self.open(str(Path(self.abspath, filename)), mode, *args, **kwargs) as f:
+        with self.open_file(str(Path(self.abspath, filename)), mode, **kwargs) as f:
             return json.load(f)

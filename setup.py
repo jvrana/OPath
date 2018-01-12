@@ -2,13 +2,6 @@ import os
 import re
 from distutils.core import setup
 
-# about
-__author__ = 'Justin Dane Vrana'
-__license__ = 'MIT'
-__package__ = "magicdir"
-__readme__ = "README"
-__version__ = "0.3.3a"
-
 tests_require = [
     'pytest',
     'pytest-runner',
@@ -20,24 +13,38 @@ install_requires = [
     'pathlib'
 ]
 
-classifiers = [],
 
-# setup functions
+def parse_version_file():
+    """Parse the __version__.py file"""
+    here = os.path.abspath(os.path.dirname(__file__))
+    ver_dict = {}
+    with open(os.path.join(here, 'pydent', '__version__.py'), 'r') as f:
+        for line in f.readlines():
+            m = re.match('__(\w+)__\s*=\s*(.+)', line)
+            if m:
+                ver_dict[m.group(1)] = m.group(2)
+    return ver_dict
+
+
 def read(fname):
+    """Read a file"""
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
+
+ver = parse_version_file()
 
 # setup
 setup(
-        name=__package__,
-        version=__version__,
-        packages=[__package__],
-        url='https://github.com/jvrana/magicdir',
-        license=__license__,
-        author=__author__,
+        name=ver['title'],
+        version=ver['version'],
+        packages=["opath"],
+        url='https://github.com/jvrana/opath',
+        license=ver['license'],
+        author=ver['author'],
         author_email='justin.vrana@gmail.com',
-        keywords='directory python tree',
+        keywords='directory python tree path',
         description='intuitive python directory tree management for all',
-        long_description=read(__readme__),
+        long_description=read("README"),
         install_requires=install_requires,
         python_requires='>=3.3',
         tests_require=tests_require,

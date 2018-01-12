@@ -1,9 +1,9 @@
-from magicdir import MagicDir
+from magicdir import ODir
 import pytest
 
 @pytest.fixture(params=[True, False])
 def a(request):
-    env = MagicDir('bin', push_up=request.param)
+    env = ODir('bin', push_up=request.param)
     labels = ['a', 'b']
 
     for l1 in labels:
@@ -26,7 +26,7 @@ def a(request):
 #     pass
 
 def test_attr():
-    env = MagicDir('bin')
+    env = ODir('bin')
     name = 'somethigldj'
     attr = 'asldkfjlsdfj'
     env.add(name, attr = attr)
@@ -34,7 +34,7 @@ def test_attr():
     assert not hasattr(env, name)
 
 def test_unsanitized_attr():
-    env = MagicDir('bin')
+    env = ODir('bin')
     assert env.add('something') == env.add('something')
     assert env.something.add('core') == env.add('something').add('core') == env.something.core
     with pytest.raises(AttributeError):
@@ -45,24 +45,21 @@ def test_unsanitized_attr():
         env.add('something', attr='somethingelse')
 
 def test_dont_sanitize_attr():
-    env = MagicDir('bin')
+    env = ODir('bin')
     with pytest.raises(AttributeError):
-        env.add('in', make_attr=True)
-    env.add('in', make_attr=False)
-    env.get('in')
-    with pytest.raises(AttributeError):
-        env.add_file('with', make_attr=True)
-    env.add_file('with', make_attr=False)
-    env.get('with')
+        env.add('in')
+    env.add('in', attr='myin')
+    assert env.has('myin')
+    assert not env.has('in')
 
 def test_unique_attrs():
-    env = MagicDir('bin')
+    env = ODir('bin')
     with pytest.raises(AttributeError):
         env.add('L1').add('L2')
         env.add('L1a').add('L2')
 
 def test_path():
-    env = MagicDir('bin')
+    env = ODir('bin')
     env.add('session1')
     env.session1.add('cat1')
     env.session1.add('cat2')
@@ -75,7 +72,7 @@ def test_path():
     assert str(env.cat2.path) == 'bin/session1/cat2'
 
 def test_print_tree():
-    env = MagicDir('bin', push_up=True)
+    env = ODir('bin', push_up=True)
     env.add('session1')
     env.session1.add('cat1')
     env.session1.add('cat2')
@@ -87,7 +84,7 @@ def test_print_tree():
     env.print()
 
 def test_paths():
-    env = MagicDir('bin')
+    env = ODir('bin')
     env.add('session1')
     env.session1.add('cat1')
     env.session1.add('cat2')
@@ -96,7 +93,7 @@ def test_paths():
     print(env.paths)
 
 def test_resolve():
-    env = MagicDir('bin')
+    env = ODir('bin')
     env.add('session1')
     env.session1.add('cat1')
     env.session1.add('cat2')
@@ -104,7 +101,7 @@ def test_resolve():
 
 def test_remove():
 
-    env = MagicDir('bin', push_up=True)
+    env = ODir('bin', push_up=True)
 
     a1 = env.add('A1')
     env.A1.add('A2')
@@ -134,7 +131,7 @@ def test_remove():
 
 def test_remove_children():
 
-    env = MagicDir('bin', push_up=True)
+    env = ODir('bin', push_up=True)
 
     a1 = env.add('A1')
     env.A1.add('A2')
@@ -155,6 +152,37 @@ def test_remove_children():
 
 def test_chained():
 
-    env = MagicDir('bin')
+    env = ODir('bin')
     env.add('A1').add('B1')
     env.add('C1').add("D1")
+
+
+def test_list_dirs():
+
+    env = ODir('bin')
+    env.add('A1').add('B1')
+    env.add('C1').add("D1")
+
+    dirs = env.list_dirs()
+    assert env.A1 in dirs
+    assert env.C1 in dirs
+    assert not env.B1 in dirs
+    assert not env.D1 in dirs
+
+
+def test_list_files():
+
+    env = ODir('bin')
+    env.add('A1').add_file('afile')
+    env.add('C1').add_file("dfile")
+    env.add_file('efile')
+    env.add_file('ffile')
+
+    files = env.list_files()
+    assert not env.A1 in files
+    assert not env.afile in files
+    assert not env.C1 in files
+    assert not env.dfile in files
+
+    assert env.efile in files
+    assert env.ffile in files

@@ -53,7 +53,7 @@ However, ODir provides some useful features for managing large directory tree st
 
 # Examples
 
-![live_example](images/opath_example.gif?raw=true)
+![live_example](images/dir_example.gif?raw=true)
 
 Its very easy to create, move, or delete directory trees. For example, the following builds the directory
 skeleton for this repo.

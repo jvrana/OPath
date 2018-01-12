@@ -6,6 +6,7 @@ from opath import utils
 
 @pytest.fixture(scope="function")
 def testing_dirs(tmpdir):
+    tmpdir = str(tmpdir)
     env1 = Path(tmpdir, 'env1')
     env2 = Path(tmpdir, 'env2')
 
@@ -22,6 +23,7 @@ def testing_dirs(tmpdir):
 
 @pytest.fixture(scope="function")
 def env(tmpdir):
+    tmpdir = str(tmpdir)
     env = ODir('bin')
     env.set_dir(tmpdir)
     env.add('A1')

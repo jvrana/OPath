@@ -54,7 +54,6 @@ class ObjChain(object):
 
         root.child1.child2.child3 # etc.
 
-    New nodes can be 'pushed_up'
     """
 
     def __init__(self, push_up=False, check_attr=True):
@@ -280,11 +279,6 @@ class ObjChain(object):
         :type with_attributes: dict
         :param push_up: whether to push the new node to root.
         :type push_up: boolean
-<<<<<<< HEAD:magicdir/magicchain.py
-        :param check_attr: if True, will raise exception if attr is not a valid attribute. If None, value will
-        default to defaults defined on initialization
-        :type check_attr: boolean|None
-=======
         :param check_attr: if True, will raise exception if attr is not a valid attribute. If None, value will default to defaults defined on initialization
         :type check_attr: boolean or None
         :return: the newly added child node

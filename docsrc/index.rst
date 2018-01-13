@@ -24,13 +24,13 @@ Build/Coverage Status
 
 OPath is currently in development (Version |Version|)
 
-+-------------------+------------------+---------------------+
-| Branch            | Build            | Coverage            |
-+===================+==================+=====================+
-| **master**        | |travis build|   | |Coverage Status|   |
-+-------------------+------------------+---------------------+
-| **development**   | |travis build|   | |Coverage Status|   |
-+-------------------+------------------+---------------------+
++-------------------+-----------------------+---------------------------------+
+| Branch            | Build                 | Coverage                        |
++===================+=======================+=================================+
+| **master**        | |master build|        | |Master Coverage Status|        |
++-------------------+-----------------------+---------------------------------+
+| **development**   | |development build|   | |Development Coverage Status|   |
++-------------------+-----------------------+---------------------------------+
 
 Installation
 ------------
@@ -201,17 +201,19 @@ API Reference
       :noindex:
 
 
-.. |travis build| image:: https://img.shields.io/travis/jvrana/opath.svg
-   :target: https://travis-ci.org/jvrana/opath
-.. |Coverage Status| image:: https://coveralls.io/repos/github/jvrana/opath/badge.svg?branch=master
-   :target: https://coveralls.io/github/jvrana/opath?branch=master
+.. |travis build| image:: https://img.shields.io/travis/jvrana/OPath.svg
+   :target: https://travis-ci.org/jvrana/OPath
+.. |Coverage Status| image:: https://coveralls.io/repos/github/jvrana/OPath/badge.svg?branch=master
+   :target: https://coveralls.io/github/jvrana/OPath?branch=master
 .. |PyPI version| image:: https://badge.fury.io/py/REPO.svg
    :target: https://badge.fury.io/py/REPO
 .. |License: MIT| image:: https://img.shields.io/badge/License-MIT-yellow.svg
    :target: https://opensource.org/licenses/MIT
-.. |travis build| image:: https://img.shields.io/travis/jvrana/opath/master.svg
-   :target: https://travis-ci.org/jvrana/opath/master
-.. |travis build| image:: https://img.shields.io/travis/jvrana/opath/development.svg
-   :target: https://travis-ci.org/jvrana/opath/development
-.. |Coverage Status| image:: https://coveralls.io/repos/github/jvrana/opath/badge.svg?branch=development
-   :target: https://coveralls.io/github/jvrana/opath?branch=development
+.. |master build| image:: https://img.shields.io/travis/jvrana/OPath/master.svg
+   :target: https://travis-ci.org/jvrana/OPath?branch=master
+.. |Master Coverage Status| image:: https://coveralls.io/repos/github/jvrana/OPath/badge.svg?branch=master
+   :target: https://coveralls.io/github/jvrana/OPath?branch=master
+.. |development build| image:: https://img.shields.io/travis/jvrana/OPath/development.svg
+   :target: https://travis-ci.org/jvrana/OPath?branch=development
+.. |Development Coverage Status| image:: https://coveralls.io/repos/github/jvrana/OPath/badge.svg?branch=development
+   :target: https://coveralls.io/github/jvrana/OPath?branch=development

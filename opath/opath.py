@@ -19,11 +19,7 @@ class OPath(ObjChain):
 
     def __init__(self, name, push_up=True, check_attr=True):
         """
-<<<<<<< HEAD:magicdir/magic_dir.py
-        Initializer for MagicPath
-=======
         Initializer for OPath
->>>>>>> refactoring:opath/opath.py
 
         :param name: basename of the path
         :type name: str
@@ -303,8 +299,7 @@ class ODir(OPath):
         :type attr: basestring
         :param push_up: whether to 'push' attribute to the root, where it can be accessed
         :type push_up: boolean
-        :param check_attr: if True, will raise exception if attr is not a valid attribute. If None, value will
-        default to defaults defined on initialization
+        :param check_attr: if True, will raise exception if attr is not a valid attribute. If None, value will default to defaults defined on initialization
         :type check_attr: boolean|None
         :return: new directory
         :rtype: ODir
@@ -326,8 +321,7 @@ class ODir(OPath):
         :type attr: basestring
         :param push_up: whether to 'push' attribute to the root, where it can be accessed
         :type push_up: boolean
-        :param check_attr: if True, will raise exception if attr is not a valid attribute. If None, value will
-        default to defaults defined on initialization
+        :param check_attr: if True, will raise exception if attr is not a valid attribute. If None, value will default to defaults defined on initialization
         :type check_attr: boolean|None
         :return: new directory
         :rtype: ODir

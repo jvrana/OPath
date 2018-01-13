@@ -1,5 +1,5 @@
-[![travis build](https://img.shields.io/travis/jvrana/opath.svg)](https://travis-ci.org/jvrana/opath)
-[![Coverage Status](https://coveralls.io/repos/github/jvrana/opath/badge.svg?branch=master)](https://coveralls.io/github/jvrana/opath?branch=master)
+[![travis build](https://img.shields.io/travis/jvrana/OPath.svg)](https://travis-ci.org/jvrana/OPath)
+[![Coverage Status](https://coveralls.io/repos/github/jvrana/OPath/badge.svg?branch=master)](https://coveralls.io/github/jvrana/OPath?branch=master)
 [![PyPI version](https://badge.fury.io/py/REPO.svg)](https://badge.fury.io/py/REPO)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -7,13 +7,15 @@
 #### Build/Coverage Status
 Branch | Build | Coverage
 :---: | :---: | :---:
-**master** | [![travis build](https://img.shields.io/travis/jvrana/opath/master.svg)](https://travis-ci.org/jvrana/opath/master) | [![Coverage Status](https://coveralls.io/repos/github/jvrana/opath/badge.svg?branch=master)](https://coveralls.io/github/jvrana/opath?branch=master)
-**development** | [![travis build](https://img.shields.io/travis/jvrana/opath/development.svg)](https://travis-ci.org/jvrana/opath/development) | [![Coverage Status](https://coveralls.io/repos/github/jvrana/opath/badge.svg?branch=development)](https://coveralls.io/github/jvrana/opath?branch=development)
+**master** | [![master build](https://img.shields.io/travis/jvrana/OPath/master.svg)](https://travis-ci.org/jvrana/OPath?branch=master) | [![Master Coverage Status](https://coveralls.io/repos/github/jvrana/OPath/badge.svg?branch=master)](https://coveralls.io/github/jvrana/OPath?branch=master)
+**development** | [![development build](https://img.shields.io/travis/jvrana/OPath/development.svg)](https://travis-ci.org/jvrana/OPath?branch=development) | [![Development Coverage Status](https://coveralls.io/repos/github/jvrana/OPath/badge.svg?branch=development)](https://coveralls.io/github/jvrana/OPath?branch=development)
 
 # 📁 ODir 📁
 
 Dealing with paths and directories isn't rocket science, but it can be a pain. **ODir** allows you to build directory trees by treating
 your directory tree as a first-class object.
+
+**Github** can be found here: https://github.com/jvrana/opath
 
 **Documentation** can be found here https://opath.readthedocs.io/en/latest/
 
